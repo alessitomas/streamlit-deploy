@@ -96,7 +96,7 @@ def preprocessing(data_dataframe):
 
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Mensagens Outbound"], axis=1)
 
-    data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"] = data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"].median()
+    data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"] = data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"] < data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"].median()
 
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Mensagens Outbound Tempo passado"], axis=1)
 
@@ -114,7 +114,7 @@ def preprocessing(data_dataframe):
 
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Ligações Outbound"], axis=1)
 
-    data_dataframe["TWILIO_Data Última Ligações Outbound Recente"] = data_dataframe["TWILIO_Data Última Ligações Outbound Tempo passado"].median()
+    data_dataframe["TWILIO_Data Última Ligações Outbound Recente"] = data_dataframe["TWILIO_Data Última Ligações Outbound Tempo passado"] < data_dataframe["TWILIO_Data Última Ligações Outbound Tempo passado"].median()
 
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Ligações Outbound Tempo passado"], axis=1)
 
