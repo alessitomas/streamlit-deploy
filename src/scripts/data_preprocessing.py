@@ -59,7 +59,7 @@ def preprocessing(data_dataframe):
     data_dataframe["PESSOA_PIPEDRIVE_city"].fillna(data_dataframe["PESSOA_PIPEDRIVE_city"].mode()[0], inplace=True)
 
 
-    data_dataframe = data_dataframe.drop(["PESSOA_PIPEDRIVE_postal_code"], axis=1)
+    # data_dataframe = data_dataframe.drop(["PESSOA_PIPEDRIVE_postal_code"], axis=1)
 
     data_dataframe['PESSOA_PIPEDRIVE_id_health_plan'].fillna(data_dataframe['PESSOA_PIPEDRIVE_id_health_plan'].mode()[0], inplace=True)
     data_dataframe['PESSOA_PIPEDRIVE_has_public_health_plan'] = data_dataframe['PESSOA_PIPEDRIVE_id_health_plan'].apply(lambda x: 1 if int(x) == 412 else 0)
