@@ -19,11 +19,11 @@ def mergeHeader_Columns(data):
     add_prefix_to_first_row(data, 'PESSOA_PIPEDRIVE_', 'A', 'R')
     add_prefix_to_first_row(data, 'FUNIL_ASSINATURA_PIPEDRIVE_', 'S', 'X')
     add_prefix_to_first_row(data, 'FUNIL_ONBOARDING_PIPEDRIVE_', 'Y', 'AH')
-    add_prefix_to_first_row(data, 'ATENDIMENTOS_AGENDA_', 'AJ', 'AY')
-    add_prefix_to_first_row(data, 'WHOQOL_', 'AZ', 'BD')
-    add_prefix_to_first_row(data, 'COMUNICARE_', 'BE', 'BE')
-    add_prefix_to_first_row(data, 'TWILIO_', 'BF', 'BM')
-    add_prefix_to_first_row(data, 'COBRANÇA_VINDI_', 'BN', 'BU')
+    add_prefix_to_first_row(data, 'ATENDIMENTOS_AGENDA_', 'AI', 'AU')
+    add_prefix_to_first_row(data, 'WHOQOL_', 'AV', 'AZ')
+    add_prefix_to_first_row(data, 'COMUNICARE_', 'BA', 'BA')
+    add_prefix_to_first_row(data, 'TWILIO_', 'BB', 'BI')
+    add_prefix_to_first_row(data, 'COBRANÇA_VINDI_', 'BJ', 'BQ')
 
     data.columns = data.iloc[0]
     data = data.drop(data.index[0])
@@ -301,9 +301,13 @@ def preprocessing(data_dataframe):
 
     data_dataframe = data_dataframe.drop(data_dataframe[(data_dataframe['FUNIL_ASSINATURA_PIPEDRIVE_status'] == 'lost') & (data_dataframe['PESSOA_PIPEDRIVE_contract_end_date'].isnull())].index)
 
+    #exportando df pronto
+
+    data_dataframe.to_csv('data-preprocessed.csv', index=False)
+
     return data_dataframe
 
-
+preprocessing(pd.read_csv('../notebooks/data/data.csv'))
 
 
 
