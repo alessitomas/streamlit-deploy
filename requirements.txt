@@ -3,3 +3,4 @@ missingno
 streamlit
 scikit-learn
 numpy
+matplotlib
