@@ -1,8 +1,6 @@
 import pandas as pd
 from datetime import datetime
 import numpy as np
-from sklearn.impute import SimpleImputer
-
 
 def column_label_to_index(col_label):
     col_index = 0
@@ -32,6 +30,7 @@ def mergeHeader_Columns(data):
     return data
 
 def preprocessing(data_dataframe):
+    from sklearn.impute import SimpleImputer
     data_dataframe = mergeHeader_Columns(data_dataframe)
     # preprocessing 1
     data_dataframe = data_dataframe.drop(["PESSOA_PIPEDRIVE_id_person_recommendation","PESSOA_PIPEDRIVE_Recebe Comunicados?", "PESSOA_PIPEDRIVE_Interesses", "PESSOA_PIPEDRIVE_Pontos de Atenção", "FUNIL_ONBOARDING_PIPEDRIVE_id_label"], axis=1)
