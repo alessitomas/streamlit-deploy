@@ -243,8 +243,6 @@ def preprocessing(data_dataframe):
 
     data_dataframe['process_time'] = tempo
 
-    data_dataframe["process_time"].to_csv('data/data2q.csv', sep=';', index=False)
-
     data_dataframe.drop(["FUNIL_ONBOARDING_PIPEDRIVE_won_time", "FUNIL_ONBOARDING_PIPEDRIVE_lost_time"], axis=1, inplace=True)
 
     data_dataframe["FUNIL_ONBOARDING_PIPEDRIVE_activities_count"] = data_dataframe["FUNIL_ONBOARDING_PIPEDRIVE_activities_count"].fillna(0)
