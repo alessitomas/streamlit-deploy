@@ -188,7 +188,7 @@ def preprocessing(data_dataframe):
 
     data_dataframe = data_dataframe[data_dataframe['FUNIL_ASSINATURA_PIPEDRIVE_status'].isin(['won', 'lost'])]
 
-    data_dataframe = data_dataframe[(data_dataframe['FUNIL_ASSINATURA_PIPEDRIVE_status'] == 'won') & (~data_dataframe['PESSOA_PIPEDRIVE_contract_end_date'].isnull())]
+    data_dataframe = data_dataframe.drop(data_dataframe[(data_dataframe['FUNIL_ASSINATURA_PIPEDRIVE_status'] == 'won') & (~data_dataframe['PESSOA_PIPEDRIVE_contract_end_date'].isnull())].index)
 
     data_dataframe = data_dataframe.drop(data_dataframe[(data_dataframe['FUNIL_ASSINATURA_PIPEDRIVE_status'] == 'lost') & (data_dataframe['PESSOA_PIPEDRIVE_contract_end_date'].isnull())].index)
 
