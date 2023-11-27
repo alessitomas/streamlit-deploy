@@ -28,9 +28,9 @@ def mergeHeader_Columns(data):
     data.columns = data.iloc[0]
     data = data.drop(data.index[0])
     return data
+from sklearn.impute import SimpleImputer
 
 def preprocessing(data_dataframe):
-    from sklearn.impute import SimpleImputer
     data_dataframe = mergeHeader_Columns(data_dataframe)
     # preprocessing 1
     data_dataframe = data_dataframe.drop(["PESSOA_PIPEDRIVE_id_person_recommendation","PESSOA_PIPEDRIVE_Recebe Comunicados?", "PESSOA_PIPEDRIVE_Interesses", "PESSOA_PIPEDRIVE_Pontos de Atenção", "FUNIL_ONBOARDING_PIPEDRIVE_id_label"], axis=1)
@@ -161,12 +161,6 @@ def preprocessing(data_dataframe):
             if tamanho > 10:
                 data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"][:10]	
 
-    for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
-        if data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] != "Em aberto":
-            data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = pd.to_datetime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], format='%Y-%m-%d', errors='coerce')
-            data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].strftime('%Y-%m-%d')
-
-
     tempo_permanencia = []
 
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"].items():
@@ -259,28 +253,6 @@ def preprocessing(data_dataframe):
 
     data_dataframe["ATENDIMENTOS_AGENDA_Datas Atendimento Médico"] = data_dataframe["ATENDIMENTOS_AGENDA_Datas Atendimento Médico"].fillna("Nunca ocorreu")
 
-    for indice, valor in data_dataframe["FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"].items():
-        if pd.notna(valor) == False:
-            if pd.notna(data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_status"]) == False and pd.notna(data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_add_time"]):
-                data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"] = "Processo em aberto"
-            if data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_status"] == "won":
-                data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"] = "Processo concluído"
-            else:
-                data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"] = "Processo não iniciado"
-
-        contagem = data_dataframe["FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"].value_counts()
-
-        agrupamento = contagem[contagem < 23].index
-        data_dataframe.loc[data_dataframe["FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"].isin(agrupamento), "FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"] = "Outro"
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Qde Atendimentos Acolhimento"] = data_dataframe["ATENDIMENTOS_AGENDA_Qde Atendimentos Acolhimento"].fillna(0)
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Faltas Acolhimento"] = data_dataframe["ATENDIMENTOS_AGENDA_Faltas Acolhimento"].fillna(0)
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Datas Acolhimento"] = data_dataframe["ATENDIMENTOS_AGENDA_Datas Acolhimento"].fillna("Nunca ocorreu")
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] = data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].fillna(0)
-
     # preprocessing 4
    
     data_dataframe["TWILIO_Mensagens Outbound"].fillna(0, inplace=True)
@@ -331,12 +303,7 @@ def preprocessing(data_dataframe):
 
     #exportando df pronto
 
-    data_dataframe.to_csv('data-preprocessed.csv', index=False)
-
     return data_dataframe
-
-
-
 
 
 
