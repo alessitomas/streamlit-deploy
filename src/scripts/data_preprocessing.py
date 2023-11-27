@@ -253,6 +253,28 @@ def preprocessing(data_dataframe):
 
     data_dataframe["ATENDIMENTOS_AGENDA_Datas Atendimento Médico"] = data_dataframe["ATENDIMENTOS_AGENDA_Datas Atendimento Médico"].fillna("Nunca ocorreu")
 
+    for indice, valor in data_dataframe["FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"].items():
+        if pd.notna(valor) == False:
+            if pd.notna(data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_status"]) == False and pd.notna(data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_add_time"]):
+                data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"] = "Processo em aberto"
+            if data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_status"] == "won":
+                data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"] = "Processo concluído"
+            else:
+                data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"] = "Processo não iniciado"
+
+        contagem = data_dataframe["FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"].value_counts()
+
+        agrupamento = contagem[contagem < 23].index
+        data_dataframe.loc[data_dataframe["FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"].isin(agrupamento), "FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"] = "Outro"
+
+    data_dataframe["ATENDIMENTOS_AGENDA_Qde Atendimentos Acolhimento"] = data_dataframe["ATENDIMENTOS_AGENDA_Qde Atendimentos Acolhimento"].fillna(0)
+
+    data_dataframe["ATENDIMENTOS_AGENDA_Faltas Acolhimento"] = data_dataframe["ATENDIMENTOS_AGENDA_Faltas Acolhimento"].fillna(0)
+
+    data_dataframe["ATENDIMENTOS_AGENDA_Datas Acolhimento"] = data_dataframe["ATENDIMENTOS_AGENDA_Datas Acolhimento"].fillna("Nunca ocorreu")
+
+    data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] = data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].fillna(0)
+
     # preprocessing 4
    
     data_dataframe["TWILIO_Mensagens Outbound"].fillna(0, inplace=True)
