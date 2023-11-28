@@ -16,14 +16,14 @@ def add_prefix_to_first_row(dataframe, prefix, start_col_label, end_col_label):
         dataframe.iat[0, col] = prefix + dataframe.iat[0, col]
 
 def mergeHeader_Columns(data):
-    add_prefix_to_first_row(data, 'PESSOA_PIPEDRIVE_', 'A', 'R')
-    add_prefix_to_first_row(data, 'FUNIL_ASSINATURA_PIPEDRIVE_', 'S', 'X')
-    add_prefix_to_first_row(data, 'FUNIL_ONBOARDING_PIPEDRIVE_', 'Y', 'AH')
-    add_prefix_to_first_row(data, 'ATENDIMENTOS_AGENDA_', 'AI', 'AU')
-    add_prefix_to_first_row(data, 'WHOQOL_', 'AV', 'AZ')
-    add_prefix_to_first_row(data, 'COMUNICARE_', 'BA', 'BA')
-    add_prefix_to_first_row(data, 'TWILIO_', 'BB', 'BI')
-    add_prefix_to_first_row(data, 'COBRANÇA_VINDI_', 'BJ', 'BQ')
+    add_prefix_to_first_row(data, 'PESSOA_PIPEDRIVE_', 'A', 'Q')
+    add_prefix_to_first_row(data, 'FUNIL_ASSINATURA_PIPEDRIVE_', 'R', 'W')
+    add_prefix_to_first_row(data, 'FUNIL_ONBOARDING_PIPEDRIVE_', 'X', 'AG')
+    add_prefix_to_first_row(data, 'ATENDIMENTOS_AGENDA_', 'AH', 'AT')
+    add_prefix_to_first_row(data, 'WHOQOL_', 'AU', 'AY')
+    add_prefix_to_first_row(data, 'COMUNICARE_', 'AZ', 'AZ')
+    add_prefix_to_first_row(data, 'TWILIO_', 'BA', 'BH')
+    add_prefix_to_first_row(data, 'COBRANÇA_VINDI_', 'BI', 'BP')
 
     data.columns = data.iloc[0]
     data = data.drop(data.index[0])
@@ -33,7 +33,9 @@ def preprocessing(data_dataframe):
     from sklearn.impute import SimpleImputer
     data_dataframe = mergeHeader_Columns(data_dataframe)
     # preprocessing 1
-    data_dataframe = data_dataframe.drop(["PESSOA_PIPEDRIVE_id_person_recommendation","PESSOA_PIPEDRIVE_Recebe Comunicados?", "PESSOA_PIPEDRIVE_Interesses", "PESSOA_PIPEDRIVE_Pontos de Atenção", "FUNIL_ONBOARDING_PIPEDRIVE_id_label"], axis=1)
+    data_dataframe = data_dataframe.drop(["PESSOA_PIPEDRIVE_id_person_recommendation", "PESSOA_PIPEDRIVE_Interesses", "PESSOA_PIPEDRIVE_Pontos de Atenção", "FUNIL_ONBOARDING_PIPEDRIVE_id_label"], axis=1)
+
+    #data_dataframe= data_dataframe.drop(["PESSOA_PIPEDRIVE_Recebe Comunicados?"])
 
     data_dataframe['PESSOA_PIPEDRIVE_birthdate'] = pd.to_datetime(data_dataframe['PESSOA_PIPEDRIVE_birthdate'])
     data_dataframe['PESSOA_PIPEDRIVE_age'] = data_dataframe['PESSOA_PIPEDRIVE_birthdate'].apply(
@@ -335,8 +337,7 @@ def preprocessing(data_dataframe):
 
     return data_dataframe
 
-
-
+preprocessing(pd.read_csv('../notebooks/data/data.csv'))
 
 
 
