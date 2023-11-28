@@ -75,8 +75,8 @@ def verify_credentials(url, db_name, collection_name, username, password):
     client = MongoClient(url)  
     db = client[db_name]
     collection = db[collection_name]
-
     user = collection.find_one({"username": username})
+
     if not user:
         return False, f"Usuário: {username} não existe"
     
@@ -98,4 +98,4 @@ def logged_out_option():
             if st.button('Logout'):
                 # Perform logout actions here
                 st.session_state.logged_in = False
-                st.experimental_rerun()  # This will refresh the page, effectively logging the user out
+                st.rerun()  # This will refresh the page, effectively logging the user out

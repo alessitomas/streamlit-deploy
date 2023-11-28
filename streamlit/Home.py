@@ -1,7 +1,13 @@
 from email import message
 import streamlit as st
+import sys
 import os
-from helper_functions import create_user, verify_credentials, logged_out_option
+
+from dotenv import load_dotenv
+load_dotenv()
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '', 'utils')))
+
+from helper_functions import create_user, logged_out_option,  verify_credentials
 
 url = os.getenv('MEU_SEGREDO_URL')
 db_name = os.getenv('MEU_SEGREDO_DB_NAME')
@@ -44,9 +50,10 @@ else:
         if submitted_login:
             status, status_message = verify_credentials(url, db_name, collection_name, username_login, password_login)
             if status:
-                st.session_state.logged_in = True
                 st.success(status_message)
+                st.session_state.logged_in = True
                 st.rerun()
+                
             else:
                 st.error(status_message)
 
