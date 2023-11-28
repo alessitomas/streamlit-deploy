@@ -161,6 +161,12 @@ def preprocessing(data_dataframe):
             if tamanho > 10:
                 data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"][:10]	
 
+    for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
+        if data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] != "Em aberto":
+            data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = pd.to_datetime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], format='%Y-%m-%d', errors='coerce')
+            data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].strftime('%Y-%m-%d')
+
+
     tempo_permanencia = []
 
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"].items():
