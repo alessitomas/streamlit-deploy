@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 import plotly.graph_objects as go
+import bcrypt
 
 def get_data_from_mongo(url ,db_name, collection_name):
     client = MongoClient(url)  
@@ -50,3 +51,51 @@ def plot_graphic_1(df):
 
     # Display the figure in Streamlit
     st.plotly_chart(fig)
+
+def create_user(url, db_name, collection_name, username, password):
+    client = MongoClient(url)  
+    db = client[db_name]
+    collection = db[collection_name]
+
+    if collection.find_one({"username": username}):
+        return False, "Usuário já existe"
+
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+    user_data = {
+        "username": username,
+        "password": hashed_password
+    }
+
+    collection.insert_one(user_data)
+
+    return True, "Usuário criado com sucesso"
+
+def verify_credentials(url, db_name, collection_name, username, password):
+    client = MongoClient(url)  
+    db = client[db_name]
+    collection = db[collection_name]
+
+    user = collection.find_one({"username": username})
+    if not user:
+        return False, f"Usuário: {username} não existe"
+    
+    if bcrypt.checkpw(password.encode('utf-8'), user['password']):
+        return True, "Login bem-sucedido"
+    else:
+        return False, "Senha incorreta"
+
+
+def check_authentication():
+    if 'logged_in' not in st.session_state or not st.session_state.logged_in:
+        st.error("Você precisa estar logado para acessar esta página.")
+        st.stop()
+
+
+def logged_out_option():
+    if 'logged_in' in st.session_state and st.session_state.logged_in:
+        with st.sidebar:
+            if st.button('Logout'):
+                # Perform logout actions here
+                st.session_state.logged_in = False
+                st.experimental_rerun()  # This will refresh the page, effectively logging the user out

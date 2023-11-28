@@ -9,11 +9,14 @@ load_dotenv()
 # Append the utils directory to the system path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'utils')))
 
-from helper_functions import get_data_from_mongo, plot_graphic_1
+from helper_functions import get_data_from_mongo, plot_graphic_1, check_authentication, logged_out_option
+
+check_authentication()
+logged_out_option()
 
 url = os.getenv('MEU_SEGREDO_URL')
 db_name = os.getenv('MEU_SEGREDO_DB_NAME')
-collection_name = os.getenv('MEU_SEGREDO_COLLECTION_NAME')
+collection_name = os.getenv('MEU_SEGREDO_COLLECTION_NAME_DATASET')
 
 df = get_data_from_mongo(url, db_name, collection_name)
 

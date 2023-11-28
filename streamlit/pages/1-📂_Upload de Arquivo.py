@@ -11,7 +11,12 @@ load_dotenv()
 # Append the utils directory to the system path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'utils')))
 
-from helper_functions import update_data_in_mongo, get_data_from_mongo
+from helper_functions import update_data_in_mongo, get_data_from_mongo, check_authentication, logged_out_option
+
+
+
+check_authentication()
+logged_out_option()
 
 st.title('Upload de um arquivo CSV')
 uploaded_file = st.file_uploader("Escolha um arquivo CSV", type="csv", help='Dataset em formato de arquivo CSV, será usado para as vizualizações.')
@@ -21,7 +26,7 @@ if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
     url = os.getenv('MEU_SEGREDO_URL')
     db_name = os.getenv('MEU_SEGREDO_DB_NAME')
-    collection_name = os.getenv('MEU_SEGREDO_COLLECTION_NAME')
+    collection_name = os.getenv('MEU_SEGREDO_COLLECTION_NAME_DATASET')
     
     update_data_in_mongo(url, db_name, collection_name, df)
     new_df = get_data_from_mongo(url, db_name, collection_name)
