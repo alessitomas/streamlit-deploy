@@ -337,7 +337,7 @@ def preprocessing(data_dataframe):
 
     return data_dataframe
 
-preprocessing(pd.read_csv('../notebooks/data/data.csv'))
+# preprocessing(pd.read_csv('../notebooks/data/data.csv'))
 
 
 
