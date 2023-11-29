@@ -2,7 +2,7 @@ import pandas as pd
 from pymongo import MongoClient
 from data_preprocessing import preprocessing
 import pandas as pd
-import matplotlib.pyplot as plt
+from datetime import datetime
 import streamlit as st
 import plotly.graph_objects as go
 import bcrypt
@@ -73,7 +73,7 @@ def verify_credentials(url, db_name, collection_name, username, password):
 
 
 def check_authentication():
-    if 'logged_in' not in st.session_state or not st.session_state.logged_in:
+    if 'logged_in' not in st.session_state or st.session_state.logged_in == None:
         st.error("Você precisa estar logado para acessar esta página.")
         st.stop()
 
@@ -82,18 +82,33 @@ def logged_out_option():
     if 'logged_in' in st.session_state and st.session_state.logged_in:
         with st.sidebar:
             if st.button('Logout'):
-                st.session_state.logged_in = False
+                st.session_state.logged_in = None
                 st.session_state.Admin = False
                 st.rerun()  
 
 
 def get_logs(url, db_name, collection_name):
+    client = MongoClient(url)
+    db = client[db_name]
+    collection = db[collection_name]
+    logs_cursor = collection.find({}, {"_id": 0, "user": 1, "action": 1, "timestamp": 1})
+    logs = list(logs_cursor)
+    if len(logs) == 0:
+
+        return []
+    else:
+        logs_details = [(log["user"], log["action"], log["timestamp"]) for log in logs]
+        return logs_details
+    
+def add_log(url, db_name, collection_name, user, action):
+    current_timestamp = datetime.now()
+    formatted_timestamp = current_timestamp.strftime("%Y-%m-%d %H:%M:%S")
     client = MongoClient(url)  
     db = client[db_name]
     collection = db[collection_name]
-    logs = collection.find({}, {"_id": 0, "user": 1, "action": 1})
-
-    if len(next(logs, None)) == 0:
-        return []
-    else:
-        return [(log["user"], log["action"]) for log in logs]
+    log = {
+        "user": user,
+        "action": action,
+        "timestamp": formatted_timestamp
+    }
+    collection.insert_one(log)
