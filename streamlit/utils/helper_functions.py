@@ -29,47 +29,34 @@ def update_data_in_mongo(url ,db_name, collection_name, df):
 def plot_graphic_1(df):
     df['PESSOA_PIPEDRIVE_contract_start_date'] = pd.to_datetime(df['PESSOA_PIPEDRIVE_contract_start_date'])
     df['PESSOA_PIPEDRIVE_contract_end_date'] = pd.to_datetime(df['PESSOA_PIPEDRIVE_contract_end_date'])
-
     df['Start_Month_Year'] = df['PESSOA_PIPEDRIVE_contract_start_date'].dt.to_period('M')
     df['End_Month_Year'] = df['PESSOA_PIPEDRIVE_contract_end_date'].dt.to_period('M')
-
     start_counts = df['Start_Month_Year'].value_counts().sort_index()
     end_counts = df['End_Month_Year'].value_counts().sort_index()
-
-
     fig = go.Figure()
     fig.add_trace(go.Bar(x=start_counts.index.astype(str), y=start_counts, name='Entradas'))
     fig.add_trace(go.Bar(x=end_counts.index.astype(str), y=end_counts, name='Saídas'))
-
-
     fig.update_layout(
         title='Histograma de Entrada e Saída de Assinaturas por Mês',
         xaxis_title='Ano e Mês',
         yaxis_title='Quantidade de Assinaturas',
         barmode='group'
     )
-
-    # Display the figure in Streamlit
     st.plotly_chart(fig)
 
 def create_user(url, db_name, collection_name, username, password, role):
     client = MongoClient(url)  
     db = client[db_name]
     collection = db[collection_name]
-
     if collection.find_one({"username": username}):
         return False, "Usuário já existe"
-
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-
     user_data = {
         "username": username,
         "password": hashed_password,
         "role": [role]
     }
-
     collection.insert_one(user_data)
-
     return True, "Usuário criado com sucesso"
 
 def verify_credentials(url, db_name, collection_name, username, password):
@@ -77,10 +64,8 @@ def verify_credentials(url, db_name, collection_name, username, password):
     db = client[db_name]
     collection = db[collection_name]
     user = collection.find_one({"username": username})
-
     if not user:
         return False, f"Usuário: {username} não existe", None
-    
     if bcrypt.checkpw(password.encode('utf-8'), user['password']):
         return True, "Login bem-sucedido", user['role'][0]
     else:
@@ -97,7 +82,18 @@ def logged_out_option():
     if 'logged_in' in st.session_state and st.session_state.logged_in:
         with st.sidebar:
             if st.button('Logout'):
-                # Perform logout actions here
                 st.session_state.logged_in = False
                 st.session_state.Admin = False
-                st.rerun()  # This will refresh the page, effectively logging the user out
+                st.rerun()  
+
+
+def get_logs(url, db_name, collection_name):
+    client = MongoClient(url)  
+    db = client[db_name]
+    collection = db[collection_name]
+    logs = collection.find({}, {"_id": 0, "user": 1, "action": 1})
+
+    if len(next(logs, None)) == 0:
+        return []
+    else:
+        return [(log["user"], log["action"]) for log in logs]
