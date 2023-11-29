@@ -16,14 +16,14 @@ def add_prefix_to_first_row(dataframe, prefix, start_col_label, end_col_label):
         dataframe.iat[0, col] = prefix + dataframe.iat[0, col]
 
 def mergeHeader_Columns(data):
-    add_prefix_to_first_row(data, 'PESSOA_PIPEDRIVE_', 'A', 'Q')
-    add_prefix_to_first_row(data, 'FUNIL_ASSINATURA_PIPEDRIVE_', 'R', 'W')
-    add_prefix_to_first_row(data, 'FUNIL_ONBOARDING_PIPEDRIVE_', 'X', 'AG')
-    add_prefix_to_first_row(data, 'ATENDIMENTOS_AGENDA_', 'AH', 'AT')
-    add_prefix_to_first_row(data, 'WHOQOL_', 'AU', 'AY')
-    add_prefix_to_first_row(data, 'COMUNICARE_', 'AZ', 'AZ')
-    add_prefix_to_first_row(data, 'TWILIO_', 'BA', 'BH')
-    add_prefix_to_first_row(data, 'COBRANÇA_VINDI_', 'BI', 'BP')
+    add_prefix_to_first_row(data, 'PESSOA_PIPEDRIVE_', 'A', 'R')
+    add_prefix_to_first_row(data, 'FUNIL_ASSINATURA_PIPEDRIVE_', 'S', 'X')
+    add_prefix_to_first_row(data, 'FUNIL_ONBOARDING_PIPEDRIVE_', 'Y', 'AH')
+    add_prefix_to_first_row(data, 'ATENDIMENTOS_AGENDA_', 'AI', 'AU')
+    add_prefix_to_first_row(data, 'WHOQOL_', 'AV', 'AZ')
+    add_prefix_to_first_row(data, 'COMUNICARE_', 'BA', 'BA')
+    add_prefix_to_first_row(data, 'TWILIO_', 'BB', 'BI')
+    add_prefix_to_first_row(data, 'COBRANÇA_VINDI_', 'BJ', 'BQ')
 
     data.columns = data.iloc[0]
     data = data.drop(data.index[0])
@@ -337,7 +337,7 @@ def preprocessing(data_dataframe):
 
     return data_dataframe
 
-# preprocessing(pd.read_csv('../notebooks/data/data.csv'))
+preprocessing(pd.read_csv('../../data/data_new.csv'))
 
 
 
