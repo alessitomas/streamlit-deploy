@@ -52,7 +52,7 @@ def plot_graphic_1(df):
     # Display the figure in Streamlit
     st.plotly_chart(fig)
 
-def create_user(url, db_name, collection_name, username, password):
+def create_user(url, db_name, collection_name, username, password, role):
     client = MongoClient(url)  
     db = client[db_name]
     collection = db[collection_name]
@@ -64,7 +64,8 @@ def create_user(url, db_name, collection_name, username, password):
 
     user_data = {
         "username": username,
-        "password": hashed_password
+        "password": hashed_password,
+        "role": [role]
     }
 
     collection.insert_one(user_data)
@@ -78,12 +79,12 @@ def verify_credentials(url, db_name, collection_name, username, password):
     user = collection.find_one({"username": username})
 
     if not user:
-        return False, f"Usuário: {username} não existe"
+        return False, f"Usuário: {username} não existe", None
     
     if bcrypt.checkpw(password.encode('utf-8'), user['password']):
-        return True, "Login bem-sucedido"
+        return True, "Login bem-sucedido", user['role'][0]
     else:
-        return False, "Senha incorreta"
+        return False, "Senha incorreta", None
 
 
 def check_authentication():
@@ -98,4 +99,5 @@ def logged_out_option():
             if st.button('Logout'):
                 # Perform logout actions here
                 st.session_state.logged_in = False
+                st.session_state.Admin = False
                 st.rerun()  # This will refresh the page, effectively logging the user out
