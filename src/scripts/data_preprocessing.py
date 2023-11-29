@@ -74,18 +74,7 @@ def preprocessing(data_dataframe):
 
     data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].fillna(0, inplace=True)
     
-     
-    data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia"] = pd.to_datetime(data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia"])
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"] = datetime.now() - data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia"]
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"].fillna('', inplace=True)
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"] = data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"].astype(str)
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"] = data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"].str.extract('(\d+) days').astype(float)
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Recente"] = data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"] < data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"].median()
+   
 
     data_dataframe = data_dataframe.drop(columns="WHOQOL_Qde Respostas WHOQOL")
 
@@ -139,7 +128,7 @@ def preprocessing(data_dataframe):
 
     data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"] = data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"] < data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"].median()
 
-    data_dataframe = data_dataframe.drop(columns=["WHOQOL_Ambiental","WHOQOL_Social","WHOQOL_Físico","WHOQOL_Psicológico","COMUNICARE_Problemas Abertos","TWILIO_Data Última Mensagens Inbound","ATENDIMENTOS_AGENDA_Datas Psicoterapia","ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado","TWILIO_Data Última Mensagens Inbound Tempo Passado"])
+    data_dataframe = data_dataframe.drop(columns=["WHOQOL_Ambiental","WHOQOL_Social","WHOQOL_Físico","WHOQOL_Psicológico","COMUNICARE_Problemas Abertos","TWILIO_Data Última Mensagens Inbound","ATENDIMENTOS_AGENDA_Datas Psicoterapia","TWILIO_Data Última Mensagens Inbound Tempo Passado"])
     
     # preprocessing 3
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
@@ -338,5 +327,5 @@ def preprocessing(data_dataframe):
 
 
 
-
+preprocessing(pd.read_csv("../../data/data_new.csv"))
 
