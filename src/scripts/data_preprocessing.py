@@ -33,9 +33,7 @@ def preprocessing(data_dataframe):
     from sklearn.impute import SimpleImputer
     data_dataframe = mergeHeader_Columns(data_dataframe)
     # preprocessing 1
-    data_dataframe = data_dataframe.drop(["PESSOA_PIPEDRIVE_id_person_recommendation", "PESSOA_PIPEDRIVE_Interesses", "PESSOA_PIPEDRIVE_Pontos de Atenção", "FUNIL_ONBOARDING_PIPEDRIVE_id_label"], axis=1)
-
-    #data_dataframe= data_dataframe.drop(["PESSOA_PIPEDRIVE_Recebe Comunicados?"])
+    data_dataframe = data_dataframe.drop(["PESSOA_PIPEDRIVE_id_person_recommendation","PESSOA_PIPEDRIVE_Recebe Comunicados?", "PESSOA_PIPEDRIVE_Interesses", "PESSOA_PIPEDRIVE_Pontos de Atenção", "FUNIL_ONBOARDING_PIPEDRIVE_id_label"], axis=1)
 
     data_dataframe['PESSOA_PIPEDRIVE_birthdate'] = pd.to_datetime(data_dataframe['PESSOA_PIPEDRIVE_birthdate'])
     data_dataframe['PESSOA_PIPEDRIVE_age'] = data_dataframe['PESSOA_PIPEDRIVE_birthdate'].apply(
@@ -75,6 +73,8 @@ def preprocessing(data_dataframe):
     data_dataframe = data_dataframe.drop(["ATENDIMENTOS_AGENDA_Faltas Psicoterapia","TWILIO_Ligações Inbound", "TWILIO_Data Última Ligações Inbound","COBRANÇA_VINDI_Qde Total de Faturas","COBRANÇA_VINDI_Qde Total de Tentativas de Cobrança","COBRANÇA_VINDI_Método de Pagamento","COBRANÇA_VINDI_Valor Médio da Mensalidade","COBRANÇA_VINDI_Qde Total de Faturas Pagas após Vencimento","COBRANÇA_VINDI_Qde Total de Faturas Inadimpletes","COBRANÇA_VINDI_Valor Total Inadimplência"], axis=1)
 
     data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].fillna(0, inplace=True)
+    
+   
 
     data_dataframe = data_dataframe.drop(columns="WHOQOL_Qde Respostas WHOQOL")
 
@@ -324,7 +324,8 @@ def preprocessing(data_dataframe):
 
     return data_dataframe
 
-preprocessing(pd.read_csv('../../data/data_new.csv'))
 
 
+
+preprocessing(pd.read_csv("../../data/data_new.csv"))
 
