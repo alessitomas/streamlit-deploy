@@ -1,5 +1,6 @@
-streamlit
-pandas
 pymongo
+streamlit
+scikit-learn
 plotly
-streamlit-authenticator
+bcrypt
+python-dotenv

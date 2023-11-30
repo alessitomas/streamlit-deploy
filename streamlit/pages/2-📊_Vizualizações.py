@@ -14,11 +14,12 @@ from helper_functions import get_data_from_mongo, plot_graphic_1, check_authenti
 check_authentication()
 logged_out_option()
 
-url = os.getenv('MEU_SEGREDO_URL')
-db_name = os.getenv('MEU_SEGREDO_DB_NAME')
-collection_name = os.getenv('MEU_SEGREDO_COLLECTION_NAME_DATASET')
+url = os.getenv('URL_DB')
+db_name = "AnaHealth"
+collection_name_dataset = "Dataset"
 
-df = get_data_from_mongo(url, db_name, collection_name)
+
+df = get_data_from_mongo(url, db_name, collection_name_dataset)
 
 st.title("Vizualizações sobre os dados")
 
