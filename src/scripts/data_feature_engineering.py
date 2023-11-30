@@ -3,6 +3,8 @@ from category_encoders import CountEncoder
 
 def feature_engineering(dataframe):
 
+    # feature engineering 1 + 3
+
     dataframe["stay_time"] = dataframe["stay_time"].str.extract('(\d+) days').astype(float)
 
     dataframe["stay_time"].fillna(0,inplace=True)
@@ -47,4 +49,33 @@ def feature_engineering(dataframe):
     dataframe = dataframe.drop(columns=["PESSOA_PIPEDRIVE_postal_code","PESSOA_PIPEDRIVE_id_person"])
 
     dataframe["PESSOA_PIPEDRIVE_contract_start_date"] = pd.to_datetime(dataframe["PESSOA_PIPEDRIVE_contract_start_date"], format='%Y-%m-%d')
+
+
+    # feature engineering 2 + 3
+
+    one_hot_encoded = pd.get_dummies(dataframe['FUNIL_ASSINATURA_PIPEDRIVE_status'], prefix='status')
+    dataframe = pd.concat([dataframe, one_hot_encoded], axis=1)
+
+    dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'] = pd.to_datetime(dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'])
+
+
+    for indice, valor in dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'].items():
+        if pd.isnull(valor):
+            dataframe.loc[indice, 'FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'] = dataframe.loc[indice, 'PESSOA_PIPEDRIVE_contract_start_date']
+
+    lost_reason_dummies = pd.get_dummies(dataframe['FUNIL_ASSINATURA_PIPEDRIVE_lost_reason'], prefix='lost_reason')
+    dataframe = pd.concat([dataframe, lost_reason_dummies], axis=1)
+
+    data_status_encoded = pd.get_dummies(dataframe['FUNIL_ONBOARDING_PIPEDRIVE_status'], prefix='Status')
+    dataframe = pd.concat([dataframe, data_status_encoded], axis=1)
+
+    lost_reason_dummies = pd.get_dummies(dataframe['FUNIL_ONBOARDING_PIPEDRIVE_lost_reason'], prefix='lost_reason')
+    dataframe = pd.concat([dataframe, lost_reason_dummies], axis=1)
+
+    dataframe.drop('ATENDIMENTOS_AGENDA_Qde Todos Atendimentos', axis='columns', inplace=True)
+
+    
+
+
+
 
