@@ -1,5 +1,10 @@
 import pandas as pd
+import numpy as np
 from category_encoders import CountEncoder
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from scipy import stats
+from sklearn.utils import resample
+
 
 def feature_engineering(dataframe):
 
@@ -73,6 +78,116 @@ def feature_engineering(dataframe):
     dataframe = pd.concat([dataframe, lost_reason_dummies], axis=1)
 
     dataframe.drop('ATENDIMENTOS_AGENDA_Qde Todos Atendimentos', axis='columns', inplace=True)
+
+
+
+    # feature engineering 4 + 3
+
+    
+    # Tratar valores ausentes
+    for column in dataframe.columns:
+        if dataframe[column].isnull().sum() > 0:
+            if dataframe[column].dtype == np.number:
+                dataframe[column].fillna(dataframe[column].median(), inplace=True)
+            else:
+                dataframe[column].fillna(dataframe[column].mode()[0], inplace=True)
+
+    # Verificando se é categórica ou numérica
+    if dataframe['WHOQOL_Físico_New'].dtype == 'object':
+        # Aplicando codificação one-hot para variáveis categóricas
+        encoder = OneHotEncoder()
+        encoded = encoder.fit_transform(dataframe[['WHOQOL_Físico_New']])
+        encoded_df = pd.DataFrame(encoded.toarray(), columns=encoder.get_feature_names_out(['WHOQOL_Físico_New']))
+        dataframe = dataframe.join(encoded_df)
+    else:
+        # Aplicando normalização ou padronização para variáveis numéricas
+        scaler = StandardScaler()
+        dataframe['WHOQOL_Físico_New'] = scaler.fit_transform(dataframe[['WHOQOL_Físico_New']])
+
+    # Calculando o intervalo interquartil
+    Q1 = dataframe['WHOQOL_Físico_New'].quantile(0.25)
+    Q3 = dataframe['WHOQOL_Físico_New'].quantile(0.75)
+    IQR = Q3 - Q1
+
+    # Removendo os outliers
+    dataframe = dataframe[(dataframe['WHOQOL_Físico_New'] >= Q1 - 1.5 * IQR) & (dataframe['WHOQOL_Físico_New'] <= Q3 + 1.5 * IQR)]
+
+    # Verificando se é categórica ou numérica
+    if dataframe['WHOQOL_Psicológico_New'].dtype == 'object':
+        # Aplicando codificação one-hot para variáveis categóricas
+        encoder = OneHotEncoder()
+        encoded = encoder.fit_transform(dataframe[['WHOQOL_Psicológico_New']])
+        encoded_df = pd.DataFrame(encoded.toarray(), columns=encoder.get_feature_names_out(['WHOQOL_Psicológico_New']))
+        dataframe = dataframe.join(encoded_df)
+    else:
+        # Aplicando normalização ou padronização para variáveis numéricas
+        scaler = StandardScaler()
+        dataframe['WHOQOL_Psicológico_New'] = scaler.fit_transform(dataframe[['WHOQOL_Psicológico_New']])
+
+        # Calculando o intervalo interquartil
+        Q1 = dataframe['WHOQOL_Psicológico_New'].quantile(0.25)
+        Q3 = dataframe['WHOQOL_Psicológico_New'].quantile(0.75)
+        IQR = Q3 - Q1
+
+        # Removendo os outliers
+        dataframe = dataframe[(dataframe['WHOQOL_Psicológico_New'] >= Q1 - 1 * IQR) & (dataframe['WHOQOL_Psicológico_New'] <= Q3 + 1 * IQR)]
+
+    # Verificando se é categórica ou numérica
+    if dataframe['WHOQOL_Social_New'].dtype == 'object':
+        # Aplicando codificação one-hot para variáveis categóricas
+        encoder = OneHotEncoder()
+        encoded = encoder.fit_transform(dataframe[['WHOQOL_Social_New']])
+        encoded_df = pd.DataFrame(encoded.toarray(), columns=encoder.get_feature_names_out(['WHOQOL_Social_New']))
+        data = data.join(encoded_df)
+    else:
+        # Aplicando normalização ou padronização para variáveis numéricas
+        scaler = StandardScaler()
+        dataframe['WHOQOL_Social_New'] = scaler.fit_transform(dataframe[['WHOQOL_Social_New']])
+
+    Q1 = dataframe['WHOQOL_Social_New'].quantile(0.25)
+    Q3 = dataframe['WHOQOL_Social_New'].quantile(0.75)
+    IQR = Q3 - Q1
+
+    # Removendo os outliers
+    dataframe = dataframe[(dataframe['WHOQOL_Social_New'] >= Q1 - 1 * IQR) & (data['WHOQOL_Social_New'] <= Q3 + 1 * IQR)]
+
+    data_encoded = pd.get_dummies(dataframe['last_stage_concluded'], columns=['last_stage_concluded'], prefix='stage')
+
+    # Convertendo a coluna 'process_time' para datetime e tratando valores inválidos
+    dataframe['process_time'] = pd.to_datetime(dataframe['process_time'], errors='coerce')
+
+    # Defina a data de referência adequada (substitua 'data_de_referencia' pela data real)
+    data_de_referencia = pd.to_datetime('2022-01-01')
+
+    # Calculando o tempo decorrido em dias desde a data de referência
+    dataframe['days_since_reference_date'] = (dataframe['process_time'] - data_de_referencia).dt.days
+
+    dataframe.dropna(subset=['days_since_reference_date'], inplace=True)
+
+    dataframe['TWILIO_Data Última Ligações Outbound Recente_Boolean_Numeric'] = dataframe['TWILIO_Data Última Ligações Outbound Recente'].astype(int)
+   
+    # Verificando a distribuição da variável convertida
+    distribution = dataframe['TWILIO_Data Última Ligações Outbound Recente'].value_counts(normalize=True)
+
+    # Reamostragem para equilibrar as classes (se necessário)
+    # Este exemplo aumenta a classe minoritária (True/1)
+    class_0 = dataframe[dataframe['TWILIO_Data Última Ligações Outbound Recente_Boolean_Numeric'] == 0]
+    class_1 = dataframe[dataframe['TWILIO_Data Última Ligações Outbound Recente_Boolean_Numeric'] == 1]
+
+    # Checando se o balanceamento é necessário
+    if distribution.min() < 0.4:  # Supondo um limite de 40% para desequilíbrio
+        class_1_upsampled = resample(class_1,
+                                    replace=True,     # amostra com substituição
+                                    n_samples=len(class_0),    # para igualar com a classe majoritária
+                                    random_state=123) # seed para reprodutibilidade
+
+        # Combinando a classe majoritária com a classe minoritária reamostrada
+        data_balanced = pd.concat([class_0, class_1_upsampled])
+
+   
+
+
+
 
     
 
