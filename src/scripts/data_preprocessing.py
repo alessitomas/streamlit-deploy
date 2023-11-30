@@ -323,9 +323,3 @@ def preprocessing(data_dataframe):
     data_dataframe.to_csv('data-preprocessed.csv', index=False)
 
     return data_dataframe
-
-
-
-
-preprocessing(pd.read_csv("../../data/data_new.csv"))
-
