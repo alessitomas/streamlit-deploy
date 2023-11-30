@@ -151,7 +151,7 @@ def feature_engineering(dataframe):
     # Removendo os outliers
     dataframe = dataframe[(dataframe['WHOQOL_Social_New'] >= Q1 - 1 * IQR) & (data['WHOQOL_Social_New'] <= Q3 + 1 * IQR)]
 
-    data_encoded = pd.get_dummies(dataframe['last_stage_concluded'], columns=['last_stage_concluded'], prefix='stage')
+    dataframe = pd.get_dummies(dataframe['last_stage_concluded'], columns=['last_stage_concluded'], prefix='stage')
 
     # Convertendo a coluna 'process_time' para datetime e tratando valores inválidos
     dataframe['process_time'] = pd.to_datetime(dataframe['process_time'], errors='coerce')
@@ -182,7 +182,8 @@ def feature_engineering(dataframe):
                                     random_state=123) # seed para reprodutibilidade
 
         # Combinando a classe majoritária com a classe minoritária reamostrada
-        data_balanced = pd.concat([class_0, class_1_upsampled])
+        dataframe = pd.concat([class_0, class_1_upsampled])
+
 
    
 
