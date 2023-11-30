@@ -44,38 +44,45 @@ def feature_engineering(dataframe):
 
     dataframe = dataframe[dataframe["PESSOA_PIPEDRIVE_id_gender"].isin([64,63])]   
     dataframe["PESSOA_PIPEDRIVE_id_gender Binário"] = dataframe["PESSOA_PIPEDRIVE_id_gender"].map({64: 0, 63: 1})
+
+    dataframe = dataframe[dataframe["FUNIL_ASSINATURA_PIPEDRIVE_id_stage"].isin([65,64])]   
+    dataframe["FUNIL_ASSINATURA_PIPEDRIVE_id_stage Binário"] = dataframe["FUNIL_ASSINATURA_PIPEDRIVE_id_stage"].map({65: 0, 64: 1})
+
+
+
     dataframe = pd.get_dummies(dataframe, columns=['PESSOA_PIPEDRIVE_id_marrital_status'], prefix='Status')
     dataframe = pd.get_dummies(dataframe, columns=['PESSOA_PIPEDRIVE_state'], prefix='Estado')
 
     ce = CountEncoder()
     dataframe['PESSOA_PIPEDRIVE_city Codificada'] = ce.fit_transform(dataframe['PESSOA_PIPEDRIVE_city'])
 
-    dataframe = dataframe.drop(columns=["PESSOA_PIPEDRIVE_city","PESSOA_PIPEDRIVE_id_gender"])
-    dataframe = dataframe.drop(columns=["PESSOA_PIPEDRIVE_postal_code","PESSOA_PIPEDRIVE_id_person"])
+    
+    dataframe = dataframe.drop(columns=["PESSOA_PIPEDRIVE_postal_code","PESSOA_PIPEDRIVE_id_person","PESSOA_PIPEDRIVE_city","PESSOA_PIPEDRIVE_id_gender","PESSOA_PIPEDRIVE_contract_start_date","PESSOA_PIPEDRIVE_contract_end_date","FUNIL_ASSINATURA_PIPEDRIVE_id_stage","FUNIL_ASSINATURA_PIPEDRIVE_id_org","FUNIL_ASSINATURA_PIPEDRIVE_lost_time","FUNIL_ASSINATURA_PIPEDRIVE_start_of_service","FUNIL_ONBOARDING_PIPEDRIVE_add_time","ATENDIMENTOS_AGENDA_Datas Atendimento Médico","ATENDIMENTOS_AGENDA_Datas Acolhimento","process_time"])
 
-    dataframe["PESSOA_PIPEDRIVE_contract_start_date"] = pd.to_datetime(dataframe["PESSOA_PIPEDRIVE_contract_start_date"], format='%Y-%m-%d')
+    # dataframe["PESSOA_PIPEDRIVE_contract_start_date"] = pd.to_datetime(dataframe["PESSOA_PIPEDRIVE_contract_start_date"], format='%Y-%m-%d')
 
 
     # feature engineering 2 + 3
 
-    one_hot_encoded = pd.get_dummies(dataframe['FUNIL_ASSINATURA_PIPEDRIVE_status'], prefix='status')
-    dataframe = pd.concat([dataframe, one_hot_encoded], axis=1)
+    dataframe = pd.get_dummies(dataframe,columns=["FUNIL_ASSINATURA_PIPEDRIVE_status"], prefix='status')
+    
 
-    dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'] = pd.to_datetime(dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'])
+    # dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'] = pd.to_datetime(dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'])
 
 
     # for indice, valor in dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'].items():
     #     if pd.isnull(valor):
     #         dataframe.loc[indice, 'FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'] = dataframe.loc[indice, 'PESSOA_PIPEDRIVE_contract_start_date']
 
-    lost_reason_dummies = pd.get_dummies(dataframe['FUNIL_ASSINATURA_PIPEDRIVE_lost_reason'], prefix='lost_reason')
-    dataframe = pd.concat([dataframe, lost_reason_dummies], axis=1)
+    dataframe = pd.get_dummies(dataframe,columns=['FUNIL_ASSINATURA_PIPEDRIVE_lost_reason'], prefix='lost_reason')
 
-    data_status_encoded = pd.get_dummies(dataframe['FUNIL_ONBOARDING_PIPEDRIVE_status'], prefix='Status')
-    dataframe = pd.concat([dataframe, data_status_encoded], axis=1)
+    dataframe = pd.get_dummies(dataframe,columns=['PESSOA_PIPEDRIVE_Canal de Preferência'], prefix='canal_preferencia')    
 
-    lost_reason_dummies = pd.get_dummies(dataframe['FUNIL_ONBOARDING_PIPEDRIVE_lost_reason'], prefix='lost_reason')
-    dataframe = pd.concat([dataframe, lost_reason_dummies], axis=1)
+    dataframe = pd.get_dummies(dataframe,columns=['FUNIL_ONBOARDING_PIPEDRIVE_status'], prefix='Status')
+    
+
+    dataframe = pd.get_dummies(dataframe,columns=['FUNIL_ONBOARDING_PIPEDRIVE_lost_reason'], prefix='lost_reason')
+    
 
     dataframe.drop('ATENDIMENTOS_AGENDA_Qde Todos Atendimentos', axis='columns', inplace=True)
 
