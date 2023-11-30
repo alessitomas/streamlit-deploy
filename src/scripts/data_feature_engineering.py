@@ -64,9 +64,9 @@ def feature_engineering(dataframe):
     dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'] = pd.to_datetime(dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'])
 
 
-    for indice, valor in dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'].items():
-        if pd.isnull(valor):
-            dataframe.loc[indice, 'FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'] = dataframe.loc[indice, 'PESSOA_PIPEDRIVE_contract_start_date']
+    # for indice, valor in dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'].items():
+    #     if pd.isnull(valor):
+    #         dataframe.loc[indice, 'FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'] = dataframe.loc[indice, 'PESSOA_PIPEDRIVE_contract_start_date']
 
     lost_reason_dummies = pd.get_dummies(dataframe['FUNIL_ASSINATURA_PIPEDRIVE_lost_reason'], prefix='lost_reason')
     dataframe = pd.concat([dataframe, lost_reason_dummies], axis=1)
@@ -85,12 +85,12 @@ def feature_engineering(dataframe):
 
     
     # Tratar valores ausentes
-    for column in dataframe.columns:
-        if dataframe[column].isnull().sum() > 0:
-            if dataframe[column].dtype == np.number:
-                dataframe[column].fillna(dataframe[column].median(), inplace=True)
-            else:
-                dataframe[column].fillna(dataframe[column].mode()[0], inplace=True)
+    # for column in dataframe.columns:
+    #     if dataframe[column].isnull().sum() > 0:
+    #         if dataframe[column].dtype == np.number:
+    #             dataframe[column].fillna(dataframe[column].median(), inplace=True)
+    #         else:
+    #             dataframe[column].fillna(dataframe[column].mode()[0], inplace=True)
 
     # Verificando se é categórica ou numérica
     if dataframe['WHOQOL_Físico_New'].dtype == 'object':
@@ -149,49 +149,49 @@ def feature_engineering(dataframe):
     IQR = Q3 - Q1
 
     # Removendo os outliers
-    dataframe = dataframe[(dataframe['WHOQOL_Social_New'] >= Q1 - 1 * IQR) & (data['WHOQOL_Social_New'] <= Q3 + 1 * IQR)]
+    dataframe = dataframe[(dataframe['WHOQOL_Social_New'] >= Q1 - 1 * IQR) & (dataframe['WHOQOL_Social_New'] <= Q3 + 1 * IQR)]
 
-    dataframe = pd.get_dummies(dataframe['last_stage_concluded'], columns=['last_stage_concluded'], prefix='stage')
+    dataframe = pd.get_dummies(dataframe, columns=['last_stage_concluded'], prefix='stage')
 
     # Convertendo a coluna 'process_time' para datetime e tratando valores inválidos
-    dataframe['process_time'] = pd.to_datetime(dataframe['process_time'], errors='coerce')
+    # dataframe['process_time'] = pd.to_datetime(dataframe['process_time'], errors='coerce')
 
-    # Defina a data de referência adequada (substitua 'data_de_referencia' pela data real)
-    data_de_referencia = pd.to_datetime('2022-01-01')
+    # # Defina a data de referência adequada (substitua 'data_de_referencia' pela data real)
+    # data_de_referencia = pd.to_datetime('2022-01-01')
 
-    # Calculando o tempo decorrido em dias desde a data de referência
-    dataframe['days_since_reference_date'] = (dataframe['process_time'] - data_de_referencia).dt.days
+    # # Calculando o tempo decorrido em dias desde a data de referência
+    # dataframe['days_since_reference_date'] = (dataframe['process_time'] - data_de_referencia).dt.days
 
-    dataframe.dropna(subset=['days_since_reference_date'], inplace=True)
+    # dataframe.dropna(subset=['days_since_reference_date'], inplace=True)
 
-    dataframe['TWILIO_Data Última Ligações Outbound Recente_Boolean_Numeric'] = dataframe['TWILIO_Data Última Ligações Outbound Recente'].astype(int)
+    # dataframe['TWILIO_Data Última Ligações Outbound Recente_Boolean_Numeric'] = dataframe['TWILIO_Data Última Ligações Outbound Recente'].astype(int)
    
-    # Verificando a distribuição da variável convertida
-    distribution = dataframe['TWILIO_Data Última Ligações Outbound Recente'].value_counts(normalize=True)
+    # # Verificando a distribuição da variável convertida
+    # distribution = dataframe['TWILIO_Data Última Ligações Outbound Recente'].value_counts(normalize=True)
 
-    # Reamostragem para equilibrar as classes (se necessário)
-    # Este exemplo aumenta a classe minoritária (True/1)
-    class_0 = dataframe[dataframe['TWILIO_Data Última Ligações Outbound Recente_Boolean_Numeric'] == 0]
-    class_1 = dataframe[dataframe['TWILIO_Data Última Ligações Outbound Recente_Boolean_Numeric'] == 1]
+    # # Reamostragem para equilibrar as classes (se necessário)
+    # # Este exemplo aumenta a classe minoritária (True/1)
+    # class_0 = dataframe[dataframe['TWILIO_Data Última Ligações Outbound Recente_Boolean_Numeric'] == 0]
+    # class_1 = dataframe[dataframe['TWILIO_Data Última Ligações Outbound Recente_Boolean_Numeric'] == 1]
 
-    # Checando se o balanceamento é necessário
-    if distribution.min() < 0.4:  # Supondo um limite de 40% para desequilíbrio
-        class_1_upsampled = resample(class_1,
-                                    replace=True,     # amostra com substituição
-                                    n_samples=len(class_0),    # para igualar com a classe majoritária
-                                    random_state=123) # seed para reprodutibilidade
+    # # Checando se o balanceamento é necessário
+    # if distribution.min() < 0.4:  # Supondo um limite de 40% para desequilíbrio
+    #     class_1_upsampled = resample(class_1,
+    #                                 replace=True,     # amostra com substituição
+    #                                 n_samples=len(class_0),    # para igualar com a classe majoritária
+    #                                 random_state=123) # seed para reprodutibilidade
 
-        # Combinando a classe majoritária com a classe minoritária reamostrada
-        dataframe = pd.concat([class_0, class_1_upsampled])
-
-
-   
+    #     # Combinando a classe majoritária com a classe minoritária reamostrada
+    #     dataframe = pd.concat([class_0, class_1_upsampled])
 
 
+    dataframe.to_csv('data-engineering.csv', index=False)
+
+    return dataframe
 
 
     
-
+feature_engineering(pd.read_csv("data-preprocessed.csv"))
 
 
 
