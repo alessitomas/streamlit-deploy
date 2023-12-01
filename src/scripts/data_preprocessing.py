@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime
 import numpy as np
+import datetime as dt
 
 def column_label_to_index(col_label):
     col_index = 0
@@ -134,27 +135,23 @@ def preprocessing(data_dataframe):
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
         if pd.notna(valor) == False: 
             if pd.notna(data_dataframe.loc[indice, "PESSOA_PIPEDRIVE_contract_end_date"]):
-                data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] =  data_dataframe.loc[indice, "PESSOA_PIPEDRIVE_contract_end_date"]
-            else:
-                data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = "Em aberto"
+                data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "PESSOA_PIPEDRIVE_contract_end_date"]
+
+    data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].fillna(dt.date.today(), inplace=True)
 
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
-        if data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] != "Em aberto":
-            index = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].find(";")
-            if index != -1:
-                data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"][:index]
+        index = str(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"]).find(";")
+        if index != -1:
+            data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"][:index]
 
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
-        if data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] != "Em aberto":
-            tamanho = len(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"])
-            if tamanho > 10:
-                data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"][:10]	
+        tamanho = len(str(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"]))
+        if tamanho > 10:
+            data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"][:10]	
 
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
-        if data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] != "Em aberto":
-            data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = pd.to_datetime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], format='%Y-%m-%d', errors='coerce')
-            data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].strftime('%Y-%m-%d')
-
+        data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = pd.to_datetime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], format='%Y-%m-%d', errors='coerce')
+        data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].strftime('%Y-%m-%d')
 
     tempo_permanencia = []
 
@@ -165,26 +162,21 @@ def preprocessing(data_dataframe):
                 data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"][:index]
 
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
-        if pd.notna(valor):
-            if data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] != "Em aberto":	
-                if pd.notna(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"]):
-                    tempo_1 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
-                    tempo_2 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"], '%Y-%m-%d')
-                    tempo_permanencia.append(str(tempo_1 - tempo_2))
-                else:
-                    tempo_1 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
-                    tempo_2 = datetime.strptime(data_dataframe.loc[indice, "PESSOA_PIPEDRIVE_contract_start_date"], '%Y-%m-%d')
-                    tempo_permanencia.append(str(tempo_1 - tempo_2))
-            else:
-                tempo_permanencia.append("Em aberto")
+        if pd.notna(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"]):
+            tempo_1 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
+            tempo_2 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"], '%Y-%m-%d')
+            tempo_permanencia.append(str(tempo_1 - tempo_2))
+        else:
+            tempo_1 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
+            tempo_2 = datetime.strptime(data_dataframe.loc[indice, "PESSOA_PIPEDRIVE_contract_start_date"], '%Y-%m-%d')
+            tempo_permanencia.append(str(tempo_1 - tempo_2))
 
     data_dataframe['stay_time'] = tempo_permanencia
 
     for indice, valor in data_dataframe["stay_time"].items():
-        if valor != "Em aberto":
-            index = data_dataframe.loc[indice, "stay_time"].find(",")
-            if index != -1:
-                data_dataframe.loc[indice, "stay_time"] = data_dataframe.loc[indice, "stay_time"][:index]
+        index = data_dataframe.loc[indice, "stay_time"].find(",")
+        if index != -1:
+            data_dataframe.loc[indice, "stay_time"] = data_dataframe.loc[indice, "stay_time"][:index]
 
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_reason"].items():
         if pd.notna(valor):  
@@ -323,3 +315,5 @@ def preprocessing(data_dataframe):
     data_dataframe.to_csv('data-preprocessed.csv', index=False)
 
     return data_dataframe
+
+preprocessing(pd.read_csv('../notebooks/data/data.csv'))
