@@ -18,16 +18,8 @@ def feature_engineering(dataframe):
     dataframe["ATENDIMENTOS_AGENDA_Faltas Acolhimento"].fillna(0,inplace=True)
     dataframe["ATENDIMENTOS_AGENDA_Datas Acolhimento"].fillna("Nunca ocorreu",inplace=True)
     dataframe = dataframe[~dataframe['ATENDIMENTOS_AGENDA_Datas Acolhimento'].astype(str).str.contains("Nunca ocorreu")]
-    # Suponha que você tenha um DataFrame chamado 'data' com uma coluna 'ATENDIMENTOS_AGENDA_Datas Acolhimento'
-    dataframe['ATENDIMENTOS_AGENDA_Datas Acolhimento'] = dataframe['ATENDIMENTOS_AGENDA_Datas Acolhimento'].str.split(';')
 
-    # Se você deseja criar uma nova coluna para cada data:
     dataframe = dataframe.explode('ATENDIMENTOS_AGENDA_Datas Acolhimento')
-    dataframe['ATENDIMENTOS_AGENDA_Datas Acolhimento'] = pd.to_datetime(dataframe['ATENDIMENTOS_AGENDA_Datas Acolhimento'].str.strip(), format='%Y-%m-%d %H:%M:%S')
-    dataframe['ATENDIMENTOS_AGENDA_Datas Acolhimento Por Mes'] = dataframe['ATENDIMENTOS_AGENDA_Datas Acolhimento'].dt.month
-    atendimentos_por_mes = dataframe.groupby(['PESSOA_PIPEDRIVE_id_person', 'ATENDIMENTOS_AGENDA_Datas Acolhimento Por Mes']).size().reset_index(name='ATENDIMENTOS_AGENDA_Qde Atendimentos Acolhimento')
-    dataframe = pd.merge(dataframe, atendimentos_por_mes, on=['PESSOA_PIPEDRIVE_id_person', 'ATENDIMENTOS_AGENDA_Datas Acolhimento Por Mes'], how='left')
-    dataframe["ATENDIMENTOS_AGENDA_Faltas Taxa"] = dataframe["ATENDIMENTOS_AGENDA_Faltas Acolhimento"] / dataframe["ATENDIMENTOS_AGENDA_Qde Atendimentos Acolhimento_x"]
     dataframe["TWILIO_Mensagens Já Enviou"] = dataframe["TWILIO_Mensagens Inbound"] > 0
     dataframe["TWILIO_Mensagens Razão"] = dataframe["TWILIO_Mensagens Outbound"] / dataframe["TWILIO_Mensagens Inbound"].where(dataframe["TWILIO_Mensagens Já Enviou"], 1)
     dataframe["PESSOA_PIPEDRIVE CRIANÇA"] = dataframe["PESSOA_PIPEDRIVE_age"] <= 16
@@ -59,20 +51,11 @@ def feature_engineering(dataframe):
     
     dataframe = dataframe.drop(columns=["PESSOA_PIPEDRIVE_postal_code","PESSOA_PIPEDRIVE_id_person","PESSOA_PIPEDRIVE_city","PESSOA_PIPEDRIVE_id_gender","PESSOA_PIPEDRIVE_contract_start_date","PESSOA_PIPEDRIVE_contract_end_date","FUNIL_ASSINATURA_PIPEDRIVE_id_stage","FUNIL_ASSINATURA_PIPEDRIVE_id_org","FUNIL_ASSINATURA_PIPEDRIVE_lost_time","FUNIL_ASSINATURA_PIPEDRIVE_start_of_service","FUNIL_ONBOARDING_PIPEDRIVE_add_time","ATENDIMENTOS_AGENDA_Datas Atendimento Médico","ATENDIMENTOS_AGENDA_Datas Acolhimento","process_time"])
 
-    # dataframe["PESSOA_PIPEDRIVE_contract_start_date"] = pd.to_datetime(dataframe["PESSOA_PIPEDRIVE_contract_start_date"], format='%Y-%m-%d')
-
 
     # feature engineering 2 + 3
 
     dataframe = pd.get_dummies(dataframe,columns=["FUNIL_ASSINATURA_PIPEDRIVE_status"], prefix='status')
     
-
-    # dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'] = pd.to_datetime(dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'])
-
-
-    # for indice, valor in dataframe['FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'].items():
-    #     if pd.isnull(valor):
-    #         dataframe.loc[indice, 'FUNIL_ASSINATURA_PIPEDRIVE_start_of_service'] = dataframe.loc[indice, 'PESSOA_PIPEDRIVE_contract_start_date']
 
     dataframe = pd.get_dummies(dataframe,columns=['FUNIL_ASSINATURA_PIPEDRIVE_lost_reason'], prefix='lost_reason')
 
@@ -90,16 +73,6 @@ def feature_engineering(dataframe):
 
     # feature engineering 4 + 3
 
-    
-    # Tratar valores ausentes
-    # for column in dataframe.columns:
-    #     if dataframe[column].isnull().sum() > 0:
-    #         if dataframe[column].dtype == np.number:
-    #             dataframe[column].fillna(dataframe[column].median(), inplace=True)
-    #         else:
-    #             dataframe[column].fillna(dataframe[column].mode()[0], inplace=True)
-
-    # Verificando se é categórica ou numérica
     if dataframe['WHOQOL_Físico_New'].dtype == 'object':
         # Aplicando codificação one-hot para variáveis categóricas
         encoder = OneHotEncoder()
@@ -159,38 +132,6 @@ def feature_engineering(dataframe):
     dataframe = dataframe[(dataframe['WHOQOL_Social_New'] >= Q1 - 1 * IQR) & (dataframe['WHOQOL_Social_New'] <= Q3 + 1 * IQR)]
 
     dataframe = pd.get_dummies(dataframe, columns=['last_stage_concluded'], prefix='stage')
-
-    # Convertendo a coluna 'process_time' para datetime e tratando valores inválidos
-    # dataframe['process_time'] = pd.to_datetime(dataframe['process_time'], errors='coerce')
-
-    # # Defina a data de referência adequada (substitua 'data_de_referencia' pela data real)
-    # data_de_referencia = pd.to_datetime('2022-01-01')
-
-    # # Calculando o tempo decorrido em dias desde a data de referência
-    # dataframe['days_since_reference_date'] = (dataframe['process_time'] - data_de_referencia).dt.days
-
-    # dataframe.dropna(subset=['days_since_reference_date'], inplace=True)
-
-    # dataframe['TWILIO_Data Última Ligações Outbound Recente_Boolean_Numeric'] = dataframe['TWILIO_Data Última Ligações Outbound Recente'].astype(int)
-   
-    # # Verificando a distribuição da variável convertida
-    # distribution = dataframe['TWILIO_Data Última Ligações Outbound Recente'].value_counts(normalize=True)
-
-    # # Reamostragem para equilibrar as classes (se necessário)
-    # # Este exemplo aumenta a classe minoritária (True/1)
-    # class_0 = dataframe[dataframe['TWILIO_Data Última Ligações Outbound Recente_Boolean_Numeric'] == 0]
-    # class_1 = dataframe[dataframe['TWILIO_Data Última Ligações Outbound Recente_Boolean_Numeric'] == 1]
-
-    # # Checando se o balanceamento é necessário
-    # if distribution.min() < 0.4:  # Supondo um limite de 40% para desequilíbrio
-    #     class_1_upsampled = resample(class_1,
-    #                                 replace=True,     # amostra com substituição
-    #                                 n_samples=len(class_0),    # para igualar com a classe majoritária
-    #                                 random_state=123) # seed para reprodutibilidade
-
-    #     # Combinando a classe majoritária com a classe minoritária reamostrada
-    #     dataframe = pd.concat([class_0, class_1_upsampled])
-
 
     dataframe.to_csv('data-engineering.csv', index=False)
 
