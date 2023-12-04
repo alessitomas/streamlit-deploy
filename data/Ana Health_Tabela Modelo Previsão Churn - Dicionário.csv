@@ -1,0 +1,74 @@
+Variável,Fonte de Dados,Descrição
+id_person,Pipedrive Person,Identificador único da pessoa no Pipedrive
+birthdate,Pipedrive Person,Data de nascimento da pessoa
+id_gender,Pipedrive Person,Identificador do gênero da pessoa
+id_marrital_status,Pipedrive Person,Identificador do estado civil da pessoa
+state,Pipedrive Person,Estado onde a pessoa reside
+city,Pipedrive Person,Cidade onde a pessoa reside
+postal_code,Pipedrive Person,CEP da área onde a pessoa reside
+id_health_plan,Pipedrive Person,Identificador do plano de saúde da pessoa
+id_person_recommencation,Pipedrive Person,Identificador da pessoa que fez a indicação do benefício da Ana Health para nosso associado
+contract_start_date,Pipedrive Person,Data de início do primeiro contrato de assintura do benefício da Ana Health
+contract_end_date,Pipedrive Person,Data de término do último contrato de assintura do benefício da Ana Health
+id_continuity,Pipedrive Person,Identificador da continuidade do serviço como pessoa física após o cancelamento por parte da empresa
+Recebe Comunicados?,Pipedrive Person,Indicação se a pessoa recebe comunicados por WhatsApp da equipe de saúde da Ana Health (Opt-out)
+Canal de Preferência,Pipedrive Person,Canal de comunicação de preferência da pessoa: Mensagem de WhatsApp ou Ligação telefnica
+Interesses,Pipedrive Person,Áreas de interesse da pessoa identificados durante onversa com a equipe de saúde
+Pontos de Atenção,Pipedrive Person,"Informações relevantes sobre a condição de saúde da pessoa, Determinantes Sociais de Saúde e Territorialização"
+notes_count,Pipedrive Person,Contagem de notas ou observações registradas 
+done_activities,Pipedrive Person,Contagem das atividades concluídas relacionada à pessoa
+id_stage,Pipedrive Deals Funil Assintura,"Identificador do tipo de contratação por assinatura (separada por vírgula): PJ, PF ou Acolimento Desemprego"
+id_org,Pipedrive Deals Funil Assintura,"Identificador da organização contratante por assinatura (separada por vírgula), quando se tratar de uma assinatura PJ"
+status,Pipedrive Deals Funil Assintura,"Status por assinatura (separada por vírgula): Cancelada (lost), Ativa (won)"
+start_of_service,Pipedrive Deals Funil Assintura,Data de contratação do benefício da Ana Health por assinatura (separada por vírgula)
+lost_time,Pipedrive Deals Funil Assintura,Data de cancelamento do benefício da Ana Health por assinatura (separada por vírgula)
+lost_reason,Pipedrive Deals Funil Assintura,Motivo do cancelamento por assinatura (separada por vírgula)
+add_time,Pipedrive Deals Funil Onboarding,Data de início do processo de onboarding no benefício da Ana Health
+status,Pipedrive Deals Funil Onboarding,"Status do processo de onboarding: Aberto, Perdido, Ganho"
+id_label,Pipedrive Deals Funil Onboarding,"Identificador do status do agendamento durante o processo de onboarding: Convera Agendada, Reagendar "
+stay_in_pipeline_stages_welcome,Pipedrive Deals Funil Onboarding,Tempo até a realização da primeira conversa com a equipe de saúde
+stay_in_pipeline_stages_first_meeting,Pipedrive Deals Funil Onboarding,Tempo até responder o questionário de qualidade de vida
+stay_in_pipeline_stages_whoqol,Pipedrive Deals Funil Onboarding,Tempo até a realização da atendimento para pactuar a jornada de cuidados
+won_time,Pipedrive Deals Funil Onboarding,Data da conclusão do processo de onboarding
+lost_time,Pipedrive Deals Funil Onboarding,"Data na qual a pessoa é retirada do processo de onboarding, sem concluí-lo"
+lost_reason,Pipedrive Deals Funil Onboarding,Motivo pelo qual a pessoa não concluiu o processo de onboarding
+activities_count,Pipedrive Deals Funil Onboarding,Contagem de atividades relacionadas ao processo de onboarding
+Qde Todos Atendimentos,Agenda,Contagem de todos os atendimentos realizados com a Ana Health
+Faltas Todos Atendimento,Agenda,Contagem das faltas considerando todos os atendimentos
+Cancelamentos Todos Atendimento,Agenda,Contagem dos cancelamentos considerando todos os atendimentos
+Qde Atendimento Médico,Agenda,Contagem dos atendimentos realizados com a equipe médica da Ana Health
+Faltas Atendimento Médico,Agenda,Contagem das faltas considerando apenas os atendimentos com a equipe médica
+Cancelamentos Atendimento Médico,Agenda,Contagem dos cancelamentos considerando apenas os atendimentos com a equipe médica
+Datas Atendimento Médico,Agenda,Data dos atendimentos com a equipe médica
+Qde Atendimentos Acolhimento,Agenda,Contagem dos atendimentos realizados com a equipe de acolhimento da Ana Health
+Faltas Acolhimento,Agenda,Contagem das faltas considerando apenas os atendimentos com a equipe de acolhimento
+Cancelamentos Acolhimento,Agenda,Contagem dos cancelamentos considerando apenas os atendimentos com a equipe de acolhimento
+Datas Acolhimento,Agenda,Datas dos atendimentos com a equipe de acolhimento
+Qde Psicoterapia,Agenda,Contagem de sessões de psicoterapia realizadas com a Ana Health
+Faltas Psicoterapia,Agenda,Contagem das faltas considerando apenas as sessões de psicoterapia
+Cancelamentos Psicoterapia,Agenda,Contagem dos cancelamentos considerando apenas as sessões de psicoterapia
+Datas Psicoterapia,Agenda,Datas das sessões de psicoterapia
+Qde Prescrições,Communicare,Contagem de prescrições médicas
+Datas Prescrição,Communicare,Datas dasprescrições médica
+Qde Respostas WHOQOL,Google Forms WHOQOL,Contagem de respostas do questionaário de qualidade de vida WHOQOL
+Físico,Google Forms WHOQOL,Nota dos aspectos físicos no questionário WHOQOL
+Psicológico,Google Forms WHOQOL,Nota dos aspectos psicológicos no questionário WHOQOL
+Social,Google Forms WHOQOL,Nota dos aspectos sociais no questionário WHOQOL
+Ambiental,Google Forms WHOQOL,Nota dos aspectos ambientais no questionário WHOQOL
+Problemas Abertos,Communicare,"Lista de queixas que a pessoa trouxe em atendimento e foram classificadas de acordo com código CIAP2 (Classificação Internacional de Atenção Primária – Segunda Edição), separada por vírgula"
+Mensagens Inbound,Twilio,Contagem de mensagens enviadas pela pessoa
+Data Última Mensagens Inbound,Twilio,Data da última mensagem enviada pela pessoa
+Mensagens Outbound,Twilio,Contagem de mensagens enviadas pela equipe de saúde
+Data Última Mensagens Outbound,Twilio,Data da última mensagem enviada pela equipe de saúde
+Ligações Inbound,Twilio,Contagem de ligação feitas pela pessoa
+Data Última Ligações Inbound,Twilio,Data da última ligação feitas pela pessoa
+Ligações Outbound,Twilio,Contagem de ligações feitas pela equipe de saúde
+Data Última Ligações Outbound,Twilio,Contagem de ligação feitas pela equipe de saúde
+Qde Total de Faturas,Vindi,Contagem de faturas emitidas para associados PF
+Qde Total de Tentativas de Cobrança,Vindi,Contagem das tentativas de cobrança para associados PF
+Método de Pagamento,Vindi,"Método de pagamento utilizado por associados PF: Cartão de Crédito, Boleto, Dinheiro (Pix)"
+Qde Perfis de Pagamento Inativos,Vindi,Contagem de perfis de pagamento inativos de associados PF
+Valor Médio da Mensalidade,Vindi,Média do valor cobrado por mês de associados PF
+Qde Total de Faturas Pagas após Vencimento,Vindi,Contagem de faturas pagas após o vencimento de associados PF
+Qde Total de Faturas Inadimpletes,Vindi,Contagem de faturas vendidas de associados PF
+Valor Total Inadimplência,Vindi,Soma do valor das faturas vencidas de associados PF
