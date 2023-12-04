@@ -22,14 +22,48 @@ def feature_engineering(dataframe):
     dataframe = dataframe.explode('ATENDIMENTOS_AGENDA_Datas Acolhimento')
     dataframe["TWILIO_Mensagens Já Enviou"] = dataframe["TWILIO_Mensagens Inbound"] > 0
     dataframe["TWILIO_Mensagens Razão"] = dataframe["TWILIO_Mensagens Outbound"] / dataframe["TWILIO_Mensagens Inbound"].where(dataframe["TWILIO_Mensagens Já Enviou"], 1)
+    
     dataframe["PESSOA_PIPEDRIVE CRIANÇA"] = dataframe["PESSOA_PIPEDRIVE_age"] <= 16
+    dataframe["PESSOA_PIPEDRIVE CRIANÇA"].fillna(0)
+    dataframe["PESSOA_PIPEDRIVE CRIANÇA"].replace(True, 1, inplace=True)
+    dataframe["PESSOA_PIPEDRIVE CRIANÇA"].replace(False, 0, inplace=True)
+    
     dataframe["PESSOA_PIPEDRIVE JOVEM"] = (dataframe["PESSOA_PIPEDRIVE_age"] > 16) & (dataframe["PESSOA_PIPEDRIVE_age"] <= 30)
+    dataframe["PESSOA_PIPEDRIVE JOVEM"].fillna(0)
+    dataframe["PESSOA_PIPEDRIVE JOVEM"].replace(True, 1, inplace=True)
+    dataframe["PESSOA_PIPEDRIVE JOVEM"].replace(False, 0, inplace=True)
+
     dataframe["PESSOA_PIPEDRIVE ADULTO"] = (dataframe["PESSOA_PIPEDRIVE_age"] > 30) & (dataframe["PESSOA_PIPEDRIVE_age"] <= 60)
+    dataframe["PESSOA_PIPEDRIVE ADULTO"].fillna(0)
+    dataframe["PESSOA_PIPEDRIVE ADULTO"].replace(True, 1, inplace=True)
+    dataframe["PESSOA_PIPEDRIVE ADULTO"].replace(False, 0, inplace=True)
+
     dataframe["PESSOA_PIPEDRIVE IDOSO"] = dataframe["PESSOA_PIPEDRIVE_age"] > 60
+    dataframe["PESSOA_PIPEDRIVE IDOSO"].fillna(0)
+    dataframe["PESSOA_PIPEDRIVE IDOSO"].replace(True, 1, inplace=True)
+    dataframe["PESSOA_PIPEDRIVE IDOSO"].replace(False, 0, inplace=True)
+
+
     dataframe["TWILIO_Ligações Outbound Qtd Significativa"] = dataframe["TWILIO_Ligações Outbound"] >= dataframe["TWILIO_Ligações Outbound"].mean()
+    dataframe["TWILIO_Ligações Outbound Qtd Significativa"].fillna(0)
+    dataframe["TWILIO_Ligações Outbound Qtd Significativa"].replace(True, 1, inplace=True)
+    dataframe["TWILIO_Ligações Outbound Qtd Significativa"].replace(False, 0, inplace=True)
+    
     dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia Nenhum"] = dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] == 0
+    dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia Nenhum"].fillna(0)
+    dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia Nenhum"].replace(True, 1, inplace=True)
+    dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia Nenhum"].replace(False, 0, inplace=True)
+
     dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"] = (dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] > 0) & (dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] <= dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].mean() )
+    dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"].fillna(0)
+    dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"].replace(True, 1, inplace=True)
+    dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"].replace(False, 0, inplace=True)
+    
     dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"] = dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] > dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].mean() 
+    dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"].fillna(0)
+    dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"].replace(True, 1, inplace=True)
+    dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"].replace(False, 0, inplace=True)
+    
     dataframe["ATENDIMENTOS_AGENDA_Qde Prescrições"].fillna(0,inplace=True)
 
     dataframe = dataframe.drop(["ATENDIMENTOS_AGENDA_Datas Prescrição"],axis=1)

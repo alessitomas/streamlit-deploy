@@ -128,6 +128,9 @@ def preprocessing(data_dataframe):
     data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"] = data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"].str.extract('(\d+) days').astype(float)
 
     data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"] = data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"] < data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"].median()
+    data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"].fillna(0)
+    data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"].replace(True, 1, inplace=True)
+    data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"].replace(False, 0, inplace=True)
 
     data_dataframe = data_dataframe.drop(columns=["WHOQOL_Ambiental","WHOQOL_Social","WHOQOL_Físico","WHOQOL_Psicológico","COMUNICARE_Problemas Abertos","TWILIO_Data Última Mensagens Inbound","ATENDIMENTOS_AGENDA_Datas Psicoterapia","TWILIO_Data Última Mensagens Inbound Tempo Passado"])
     
@@ -279,6 +282,9 @@ def preprocessing(data_dataframe):
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Mensagens Outbound"], axis=1)
 
     data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"] = data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"] < data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"].median()
+    data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"].fillna(0)
+    data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"].replace(True, 1, inplace=True)
+    data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"].replace(False, 0, inplace=True)
 
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Mensagens Outbound Tempo passado"], axis=1)
 
@@ -297,6 +303,9 @@ def preprocessing(data_dataframe):
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Ligações Outbound"], axis=1)
 
     data_dataframe["TWILIO_Data Última Ligações Outbound Recente"] = data_dataframe["TWILIO_Data Última Ligações Outbound Tempo passado"] < data_dataframe["TWILIO_Data Última Ligações Outbound Tempo passado"].median()
+    data_dataframe["TWILIO_Data Última Ligações Outbound Recente"].fillna(0)
+    data_dataframe["TWILIO_Data Última Ligações Outbound Recente"].replace(True, 1, inplace=True)
+    data_dataframe["TWILIO_Data Última Ligações Outbound Recente"].replace(False, 0, inplace=True)
 
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Ligações Outbound Tempo passado"], axis=1)
 
