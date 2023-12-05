@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 import os
 from flask_sqlalchemy import SQLAlchemy
 
-
 from ..src.scripts.data_feature_engineering import feature_engineering
 
 load_dotenv()
@@ -34,7 +33,13 @@ def predict():
     
     dados = request.json
     dados_preprocessados= preprocessing(dados)
+    if dados_preprocessados == False:
+        return jsonify({'error': 'Erro no pré-processamento dos dados'}), 400
+    
     dados_feature = feature_engineering(dados_preprocessados)
+    if dados_feature == False:
+        return jsonify({'error': 'Erro na feature engineering dos dados'}), 400
+    
     novo_log = Log(data=str(dados))
     db.session.add(novo_log)
     db.session.commit()
