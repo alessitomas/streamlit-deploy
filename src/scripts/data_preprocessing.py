@@ -321,8 +321,8 @@ def preprocessing(data_dataframe):
 
     #exportando df pronto
 
-    data_dataframe.to_csv('data-preprocessed.csv', index=False)
+    data_dataframe.to_csv('../notebooks/data/data-preprocessed.csv', index=False)
 
     return data_dataframe
 
-preprocessing(pd.read_csv('../notebooks/data/data.csv'))
+preprocessing(pd.read_csv('../notebooks/data/Ana Health_Tabela Modelo Previsão Churn - Tabela.csv'))
