@@ -167,13 +167,13 @@ def feature_engineering(dataframe):
 
     dataframe = pd.get_dummies(dataframe, columns=['last_stage_concluded'], prefix='stage')
 
-    dataframe.to_csv('data-engineering.csv', index=False)
+    dataframe.to_csv('../notebooks/data/data-engineering.csv', index=False)
 
     return dataframe
 
 
     
-feature_engineering(pd.read_csv("data-preprocessed.csv"))
+feature_engineering(pd.read_csv("../notebooks/data/data-preprocessed.csv"))
 
 
 
