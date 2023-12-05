@@ -8,3 +8,4 @@ geopy
 pymongo
 flask
 python-dotenv
+Flask-SQLAlchemy
