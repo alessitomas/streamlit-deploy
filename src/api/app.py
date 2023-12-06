@@ -1,11 +1,10 @@
 from flask import Flask, request, jsonify
 import joblib
-from ..src.scripts.data_preprocessing import preprocessing
+from ..scripts.data_preprocessing import preprocessing
 from dotenv import load_dotenv
 import os
 from flask_sqlalchemy import SQLAlchemy
-
-from ..src.scripts.data_feature_engineering import feature_engineering
+from ..scripts.data_feature_engineering import feature_engineering
 
 load_dotenv()
 
@@ -31,7 +30,13 @@ def predict():
     if not verificar_api_key():
         return jsonify({'error': 'Acesso negado'}), 403
     
-    dados = request.json
+    try:
+        dados = request.json
+        if dados is None:
+            return jsonify({"erro": "Nenhum dado JSON fornecido."}), 400
+    except Exception:
+        return jsonify({"erro": f"Erro ao processar a requisição"}), 500
+
     dados_preprocessados= preprocessing(dados)
     if dados_preprocessados == False:
         return jsonify({'error': 'Erro no pré-processamento dos dados'}), 400
@@ -43,8 +48,13 @@ def predict():
     novo_log = Log(data=str(dados))
     db.session.add(novo_log)
     db.session.commit()
-    predicao = model.predict(dados_feature)
-    return jsonify({'predicao': predicao.tolist()})
+    try : 
+        predicao = model.predict(dados_feature)
+        if predicao != None:
+            return jsonify({'predicao': predicao.tolist()})
+        
+    except Exception:
+        return jsonify({'error': 'Erro na predição do modelo'}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)

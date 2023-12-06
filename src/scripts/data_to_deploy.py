@@ -4,19 +4,18 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVR
 from sklearn.model_selection import GridSearchCV
-from sqlalchemy import false
 
-data = pd.read_csv("../scripts/data-engineering.csv")
+data = pd.read_csv("../notebooks/data/data-engineering.csv")
 
 def modelo(data=data):
 
     try:
 
-        for indice, linha in data['status_won'].items():
-            if linha == 1:
-                data.drop(indice, inplace=True)
+        # for indice, linha in data['status_won'].items():
+        #     if linha == 1:
+        #         data.drop(indice, inplace=True)
 
-        data.reset_index(drop=True, inplace=True)
+        # data.reset_index(drop=True, inplace=True)
 
         X = data.drop(columns=['stay_time'], axis=1)
         y = data['stay_time']
@@ -37,10 +36,13 @@ def modelo(data=data):
             'svr__C': [0.1, 1, 10],
             'svr__epsilon': [0.1, 0.2, 0.5],
         }
+        try:
+            modelo_grid = GridSearchCV(pipe_svr, parametros_grid_svr, cv=5, scoring='neg_mean_squared_error', verbose=1, n_jobs=-1)
+            modelo_grid.fit(X_train, y_train)
+        except Exception as e:
+            print(f"Ocorreu um erro: {e}")
 
-        modelo_grid = GridSearchCV(pipe_svr, parametros_grid_svr, cv=5, scoring='neg_mean_squared_error', verbose=1, n_jobs=-1)
-        modelo_grid.fit(X_train, y_train)
-
-        dump(modelo_grid, 'SVR_model.joblib')
-    except:
+        dump(modelo_grid, '../notebooks/data/SVR_model.joblib')
+    except Exception as e:
+        print(f"Ocorreu um erro: {e}")
         return False
