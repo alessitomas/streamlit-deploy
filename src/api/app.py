@@ -1,10 +1,16 @@
+import os
+import sys
 from flask import Flask, request, jsonify
 import joblib
-from ..scripts.data_preprocessing import preprocessing
 from dotenv import load_dotenv
-import os
 from flask_sqlalchemy import SQLAlchemy
-from ..scripts.data_feature_engineering import feature_engineering
+
+# Adicione o diretório raiz do projeto ao PYTHONPATH
+caminho_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, caminho_projeto)
+
+from scripts.data_preprocessing import preprocessing
+from scripts.data_feature_engineering import feature_engineering
 
 load_dotenv()
 
@@ -15,7 +21,8 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///log_Ana_Health.db'
 db = SQLAlchemy(app)
 
-model = joblib.load('./src/scripts/SVR_model.joblib')
+# Carrega o modelo usando um caminho absoluto
+model = joblib.load(os.path.join(caminho_projeto, 'notebooks/data/SVR_model.joblib'))
 
 def verificar_api_key():    
     api_key = request.headers.get('X-API-KEY')
@@ -37,7 +44,7 @@ def predict():
     except Exception:
         return jsonify({"erro": f"Erro ao processar a requisição"}), 500
 
-    dados_preprocessados= preprocessing(dados)
+    dados_preprocessados = preprocessing(dados)
     if dados_preprocessados == False:
         return jsonify({'error': 'Erro no pré-processamento dos dados'}), 400
     
@@ -48,11 +55,11 @@ def predict():
     novo_log = Log(data=str(dados))
     db.session.add(novo_log)
     db.session.commit()
+
     try : 
         predicao = model.predict(dados_feature)
         if predicao != None:
             return jsonify({'predicao': predicao.tolist()})
-        
     except Exception:
         return jsonify({'error': 'Erro na predição do modelo'}), 400
 

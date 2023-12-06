@@ -331,4 +331,4 @@ def preprocessing(data_dataframe):
     except Exception:
         return False
 
-preprocessing(pd.read_csv("./data/Ana Health_Tabela Modelo Previsão Churn - Tabela.csv"))
+preprocessing(pd.read_csv("../data/Ana Health_Tabela Modelo Previsão Churn - Tabela.csv"))
