@@ -156,30 +156,6 @@ def preprocessing(data_dataframe):
         data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = pd.to_datetime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], format='%Y-%m-%d', errors='coerce')
         data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].strftime('%Y-%m-%d')
 
-    tempo_permanencia = []
-
-    for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"].items():
-        if pd.notna(valor):
-            index = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"].find(";")
-            if index != -1:
-                data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"][:index]
-
-    for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
-        if pd.notna(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"]):
-            tempo_1 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
-            tempo_2 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"], '%Y-%m-%d')
-            tempo_permanencia.append(str(tempo_1 - tempo_2))
-        else:
-            tempo_1 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
-            tempo_2 = datetime.strptime(data_dataframe.loc[indice, "PESSOA_PIPEDRIVE_contract_start_date"], '%Y-%m-%d')
-            tempo_permanencia.append(str(tempo_1 - tempo_2))
-
-    data_dataframe['stay_time'] = tempo_permanencia
-
-    for indice, valor in data_dataframe["stay_time"].items():
-        index = data_dataframe.loc[indice, "stay_time"].find(",")
-        if index != -1:
-            data_dataframe.loc[indice, "stay_time"] = data_dataframe.loc[indice, "stay_time"][:index]
 
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_reason"].items():
         if pd.notna(valor):  

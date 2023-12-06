@@ -3,6 +3,7 @@ import numpy as np
 from category_encoders import CountEncoder
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from scipy import stats
+from datetime import datetime
 from sklearn.utils import resample
 
 
@@ -10,9 +11,6 @@ def feature_engineering(dataframe):
 
     # feature engineering 1 + 3
 
-    dataframe["stay_time"] = dataframe["stay_time"].str.extract('(\d+) days').astype(float)
-
-    dataframe["stay_time"].fillna(0,inplace=True)
 
     dataframe["ATENDIMENTOS_AGENDA_Qde Atendimentos Acolhimento"].fillna(0,inplace=True)
     dataframe["ATENDIMENTOS_AGENDA_Faltas Acolhimento"].fillna(0,inplace=True)
@@ -83,29 +81,47 @@ def feature_engineering(dataframe):
     dataframe['PESSOA_PIPEDRIVE_city Codificada'] = ce.fit_transform(dataframe['PESSOA_PIPEDRIVE_city'])
 
     
-    dataframe = dataframe.drop(columns=["PESSOA_PIPEDRIVE_postal_code","PESSOA_PIPEDRIVE_id_person","PESSOA_PIPEDRIVE_city","PESSOA_PIPEDRIVE_id_gender","PESSOA_PIPEDRIVE_contract_start_date","PESSOA_PIPEDRIVE_contract_end_date","FUNIL_ASSINATURA_PIPEDRIVE_id_stage","FUNIL_ASSINATURA_PIPEDRIVE_id_org","FUNIL_ASSINATURA_PIPEDRIVE_lost_time","FUNIL_ASSINATURA_PIPEDRIVE_start_of_service","FUNIL_ONBOARDING_PIPEDRIVE_add_time","ATENDIMENTOS_AGENDA_Datas Atendimento Médico","ATENDIMENTOS_AGENDA_Datas Acolhimento","process_time"])
+    dataframe = dataframe.drop(columns=["PESSOA_PIPEDRIVE_postal_code","PESSOA_PIPEDRIVE_id_person","PESSOA_PIPEDRIVE_city","PESSOA_PIPEDRIVE_id_gender","FUNIL_ASSINATURA_PIPEDRIVE_id_stage","FUNIL_ASSINATURA_PIPEDRIVE_id_org","FUNIL_ONBOARDING_PIPEDRIVE_add_time","ATENDIMENTOS_AGENDA_Datas Atendimento Médico","ATENDIMENTOS_AGENDA_Datas Acolhimento","process_time"])
 
-
-    # feature engineering 2 + 3
+    # feature engineering 2 + 1
 
     dataframe = pd.get_dummies(dataframe,columns=["FUNIL_ASSINATURA_PIPEDRIVE_status"], prefix='status')
-    
-
     dataframe = pd.get_dummies(dataframe,columns=['FUNIL_ASSINATURA_PIPEDRIVE_lost_reason'], prefix='lost_reason')
-
     dataframe = pd.get_dummies(dataframe,columns=['PESSOA_PIPEDRIVE_Canal de Preferência'], prefix='canal_preferencia')    
-
     dataframe = pd.get_dummies(dataframe,columns=['FUNIL_ONBOARDING_PIPEDRIVE_status'], prefix='Status')
-    
-
     dataframe = pd.get_dummies(dataframe,columns=['FUNIL_ONBOARDING_PIPEDRIVE_lost_reason'], prefix='lost_reason')
-    
 
-    dataframe.drop('ATENDIMENTOS_AGENDA_Qde Todos Atendimentos', axis='columns', inplace=True)
+    tempo_permanencia = []
 
+    for indice, valor in dataframe["FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"].items():
+        if pd.notna(valor):
+            index = dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"].find(";")
+            if index != -1:
+                dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"] = dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"][:index]
 
+    for indice, valor in dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
+        if pd.notna(dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"]):
+            tempo_1 = datetime.strptime(dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
+            tempo_2 = datetime.strptime(dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"], '%Y-%m-%d')
+            tempo_permanencia.append(str(tempo_1 - tempo_2))
+        else:
+            tempo_1 = datetime.strptime(dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
+            tempo_2 = datetime.strptime(dataframe.loc[indice, "PESSOA_PIPEDRIVE_contract_start_date"], '%Y-%m-%d')
+            tempo_permanencia.append(str(tempo_1 - tempo_2))
 
-    # feature engineering 4 + 3
+    dataframe['stay_time'] = tempo_permanencia
+
+    for indice, valor in dataframe["stay_time"].items():
+        index = dataframe.loc[indice, "stay_time"].find(",")
+        if index != -1:
+            dataframe.loc[indice, "stay_time"] = dataframe.loc[indice, "stay_time"][:index]
+
+    dataframe["stay_time"] = dataframe["stay_time"].str.extract('(\d+) days').astype(float)
+    dataframe["stay_time"] = np.nan_to_num(dataframe["stay_time"], nan=0)
+
+    dataframe.drop(columns=["FUNIL_ASSINATURA_PIPEDRIVE_start_of_service","FUNIL_ASSINATURA_PIPEDRIVE_lost_time","PESSOA_PIPEDRIVE_contract_start_date","PESSOA_PIPEDRIVE_contract_end_date"],inplace=True)
+
+    # feature engineering 4 
 
     if dataframe['WHOQOL_Físico_New'].dtype == 'object':
         # Aplicando codificação one-hot para variáveis categóricas
