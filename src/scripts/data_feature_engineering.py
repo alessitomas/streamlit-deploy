@@ -85,11 +85,11 @@ def feature_engineering(dataframe):
 
     # feature engineering 2 + 1
 
-    dataframe = pd.get_dummies(dataframe,columns=["FUNIL_ASSINATURA_PIPEDRIVE_status"], prefix='status')
-    dataframe = pd.get_dummies(dataframe,columns=['FUNIL_ASSINATURA_PIPEDRIVE_lost_reason'], prefix='lost_reason')
+    dataframe = pd.get_dummies(dataframe,columns=["FUNIL_ASSINATURA_PIPEDRIVE_status"], prefix='assinatura_status')
+    dataframe = pd.get_dummies(dataframe,columns=['FUNIL_ASSINATURA_PIPEDRIVE_lost_reason'], prefix='assinatura_lost_reason')
     dataframe = pd.get_dummies(dataframe,columns=['PESSOA_PIPEDRIVE_Canal de Preferência'], prefix='canal_preferencia')    
-    dataframe = pd.get_dummies(dataframe,columns=['FUNIL_ONBOARDING_PIPEDRIVE_status'], prefix='Status')
-    dataframe = pd.get_dummies(dataframe,columns=['FUNIL_ONBOARDING_PIPEDRIVE_lost_reason'], prefix='lost_reason')
+    dataframe = pd.get_dummies(dataframe,columns=['FUNIL_ONBOARDING_PIPEDRIVE_status'], prefix='onboarding_status')
+    dataframe = pd.get_dummies(dataframe,columns=['FUNIL_ONBOARDING_PIPEDRIVE_lost_reason'], prefix='onboarding_lost_reason')
 
     tempo_permanencia = []
 
