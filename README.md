@@ -42,6 +42,8 @@ descartamos outras, entre outros procedimentos. Os notebooks relativos à essas 
 pasta "feature engineering". As tabelas criadas pelos processos de pré-processamento e feature engineering se 
 encontram na pasta "data".
 
+**A documentação completa sobre todas as manipulações de dados se encontra no arquivo Documentação-Manipulação-de-dados, dentro da pasta doc**
+
 ## O modelo
 
 O notebook de treinamento do modelo está contido na pasta `notebooks/modelo_tempo_permanencia.ipynb` , nele foram treinados os algoritmos de `Regressor Linear`, `Random Forest` e `Support Vector Regressor`, juntamente com ajuste de hiperparâmetros com `GridSearch` da biblioteca `scikit-learn`, os resultados obtidos foram
