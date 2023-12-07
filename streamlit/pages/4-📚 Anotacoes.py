@@ -56,9 +56,10 @@ with col3:
         with open('notes.txt', 'r') as f:
             notes = f.read().split('\n')
 
-        # Remover a penultima anotação
+        # Remover a penultima anotação e apagar as anotacoes vazias
         if notes:
-            notes.pop(-2)
+            notes = notes[:-2]
+            notes = [note for note in notes if note.strip()]
 
         # Salvar as anotações restantes
         with open('notes.txt', 'w') as f:
