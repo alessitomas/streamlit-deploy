@@ -5,7 +5,7 @@ name: api-deploy
 
 on:
   push:
-    branches: [ "deploy-branch" ]
+    branches: [ "deploy_deploy" ]
 
 permissions:
   contents: read
