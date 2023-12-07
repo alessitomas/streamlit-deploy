@@ -89,7 +89,6 @@ def feature_engineering(dataframe):
         ce = CountEncoder()
         dataframe['PESSOA_PIPEDRIVE_city Codificada'] = ce.fit_transform(dataframe['PESSOA_PIPEDRIVE_city'])
 
-        # feature engineering 2 + 1
 
         dataframe = dataframe.drop(columns=["PESSOA_PIPEDRIVE_postal_code","PESSOA_PIPEDRIVE_id_person","PESSOA_PIPEDRIVE_city","PESSOA_PIPEDRIVE_id_gender","PESSOA_PIPEDRIVE_contract_start_date","PESSOA_PIPEDRIVE_contract_end_date","FUNIL_ASSINATURA_PIPEDRIVE_id_stage","FUNIL_ASSINATURA_PIPEDRIVE_id_org","FUNIL_ASSINATURA_PIPEDRIVE_lost_time","FUNIL_ASSINATURA_PIPEDRIVE_start_of_service","FUNIL_ONBOARDING_PIPEDRIVE_add_time","ATENDIMENTOS_AGENDA_Datas Atendimento Médico","ATENDIMENTOS_AGENDA_Datas Acolhimento","process_time"])
 
@@ -111,29 +110,24 @@ def feature_engineering(dataframe):
 
         dataframe.drop('ATENDIMENTOS_AGENDA_Qde Todos Atendimentos', axis='columns', inplace=True)
 
-        dataframe['stay_time'] = tempo_permanencia
 
-        for indice, valor in dataframe["stay_time"].items():
-            index = dataframe.loc[indice, "stay_time"].find(",")
-            if index != -1:
-                dataframe.loc[indice, "stay_time"] = dataframe.loc[indice, "stay_time"][:index]
 
-            # feature engineering 4 + 3
+        # feature engineering 4 + 3
 
-            if dataframe['WHOQOL_Físico_New'].dtype == 'object':
-                # Aplicando codificação one-hot para variáveis categóricas
-                encoder = OneHotEncoder()
-                encoded = encoder.fit_transform(dataframe[['WHOQOL_Físico_New']])
-                encoded_df = pd.DataFrame(encoded.toarray(), columns=encoder.get_feature_names_out(['WHOQOL_Físico_New']))
-                dataframe = dataframe.join(encoded_df)
+        if dataframe['WHOQOL_Físico_New'].dtype == 'object':
+            # Aplicando codificação one-hot para variáveis categóricas
+            encoder = OneHotEncoder()
+            encoded = encoder.fit_transform(dataframe[['WHOQOL_Físico_New']])
+            encoded_df = pd.DataFrame(encoded.toarray(), columns=encoder.get_feature_names_out(['WHOQOL_Físico_New']))
+            dataframe = dataframe.join(encoded_df)
+        else:
+            # Aplicando normalização ou padronização para variáveis numéricas
+            scaler = StandardScaler()
+            if dataframe['WHOQOL_Físico_New'].count() >= 2:
+                dataframe['WHOQOL_Físico_New'] = scaler.fit_transform(dataframe[['WHOQOL_Físico_New']])
             else:
-                # Aplicando normalização ou padronização para variáveis numéricas
-                scaler = StandardScaler()
-                if dataframe['WHOQOL_Físico_New'].count() >= 2:
-                    dataframe['WHOQOL_Físico_New'] = scaler.fit_transform(dataframe[['WHOQOL_Físico_New']])
-                else:
-                    # Lide com o caso de ter apenas uma linha ou todos os valores NaN
-                    dataframe['WHOQOL_Físico_New'] = dataframe['WHOQOL_Físico_New'].fillna(0)
+                # Lide com o caso de ter apenas uma linha ou todos os valores NaN
+                dataframe['WHOQOL_Físico_New'] = dataframe['WHOQOL_Físico_New'].fillna(0)
 
         # Calculando o intervalo interquartil
         Q1 = dataframe['WHOQOL_Físico_New'].quantile(0.25)

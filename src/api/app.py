@@ -3,8 +3,9 @@ import sys
 from flask import Flask, request, jsonify
 import joblib
 from dotenv import load_dotenv
-from flask_sqlalchemy import SQLAlchemy
+from pymongo import MongoClient
 import pandas as pd
+
 
 # Adicione o diretório raiz do projeto ao PYTHONPATH
 caminho_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -15,12 +16,15 @@ from scripts.data_feature_engineering import feature_engineering
 
 load_dotenv()
 
+url = os.getenv("URL_DB")
+client = MongoClient(url)
+db_name = client["AnaHealth"]
+collection = client["Api-Log"]
+
 API_KEY_ANA = os.getenv('API_KEY_ANA')
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///log_Ana_Health.db'
-db = SQLAlchemy(app)
 
 # Carrega o modelo usando um caminho absoluto
 model = joblib.load(os.path.join(caminho_projeto, 'notebooks/data/SVR_model.joblib'))
@@ -34,7 +38,6 @@ def verificar_api_key():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    from model import Log
     if not verificar_api_key():
         return jsonify({'error': 'Acesso negado'}), 403
     
@@ -46,32 +49,26 @@ def predict():
         return jsonify({"erro": f"Erro ao processar a requisição"}), 500
 
     try:
-
-        with open("../api/colunas.txt", "r") as arquivo:
-        # Leia o conteúdo do arquivo e remova espaços em branco e quebras de linha
-            nomes_lista = arquivo.readlines()
-
-        nomes_lista = [string.replace(',', '').replace('\n', '')for string in nomes_lista]
-        dados = pd.DataFrame([dados])
-
-        dados.columns = nomes_lista
-        
+        dados = pd.DataFrame([dados])        
+    
+    
     except Exception:
         return jsonify({"erro": "Erro no formato dos dados."}), 400
     
-    dados_preprocessados = preprocessing(dados)
-    if dados_preprocessados == False:
-        return jsonify({'error': 'Erro no pré-processamento dos dados'}), 400
-    
-    dados_feature = feature_engineering(dados_preprocessados)
-    if dados_feature == False:
+    resultado = preprocessing(dados)
+    # if resultado == False:
+    #     return jsonify({'error': 'Erro no pré-processamento dos dados'}), 400
+    dados_preprocessados = resultado
+
+    resultado2 = feature_engineering(dados_preprocessados)
+    if resultado2 == False:
         return jsonify({'error': 'Erro na feature engineering dos dados'}), 400
+    dados_feature = resultado2
+    print(dados_feature)
     
     try : 
-        predicao = model.predict(dados.values.reshape(1, -1))
-        novo_log = Log(data=str(dados_feature.iloc[0]),predicao=int(predicao.tolist()[0]))
-        db.session.add(novo_log)
-        db.session.commit()
+        predicao = model.predict(dados_feature.values.reshape(1, -1))
+       
 
         if predicao != None:
             
