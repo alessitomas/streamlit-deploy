@@ -50,15 +50,17 @@ def predict():
         return jsonify({"erro": f"Erro ao processar a requisição"}), 500
 
     try:
-        dados = pd.DataFrame([dados])        
-        print(dados.head())
+        data = pd.DataFrame(pd.DataFrame([dados]).iloc[0]).T
+
+        print(data)  
+        
     
     except Exception:
         return jsonify({"erro": "Erro no formato dos dados."}), 400
     
     dados_preprocessados = preprocessing(dados)
-    if dados_preprocessados == False:
-        return jsonify({'error': 'Erro no pré-processamento dos dados'}), 400
+    # if dados_preprocessados == False:
+    #     return jsonify({'error': 'Erro no pré-processamento dos dados'}), 400
     
 
     dados_feature = feature_engineering(dados_preprocessados)
@@ -68,9 +70,9 @@ def predict():
     
     
     try : 
+        
         predicao = model.predict(dados_feature.values.reshape(1, -1))
-       
-
+        
         if predicao != None:
             collection.insert({"features": dados ,"predict": predicao.tolist(), "date" : datetime.now().strftime('%d-%m-%Y')})
             return jsonify({'predicao': predicao.tolist()})
