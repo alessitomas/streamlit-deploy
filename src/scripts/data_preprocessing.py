@@ -333,6 +333,5 @@ def preprocessing(data_dataframe):
         return False
 
 
-data = pd.read_csv("../notebooks/data/Ana Health_Tabela Modelo Previsão Churn - Tabela.csv")
-print(data.iloc[50])
-preprocessing(pd.DataFrame(data.iloc[50]))
+
+

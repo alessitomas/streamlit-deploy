@@ -6,19 +6,7 @@ from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
 
-# df = pd.read_csv("../notebooks/data/data-engineering.csv")
 
-# for indice, linha in df['status_won'].items():
-#     if linha == 1:
-#         df.drop(indice, inplace=True)
-
-# df.reset_index(drop=True, inplace=True)
-
-# df = df.drop(columns=['stay_time'], axis=1)
-        
-# DADOS = df.iloc[69]
-
-# print(DADOS)
 
 # Adicione o diretório raiz do projeto ao PYTHONPATH
 caminho_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
