@@ -5,6 +5,7 @@ import joblib
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import pandas as pd
+from datetime import datetime
 
 
 # Adicione o diretório raiz do projeto ao PYTHONPATH
@@ -50,29 +51,30 @@ def predict():
 
     try:
         dados = pd.DataFrame([dados])        
-    
+        print(dados.head())
     
     except Exception:
         return jsonify({"erro": "Erro no formato dos dados."}), 400
     
-    resultado = preprocessing(dados)
-    # if resultado == False:
-    #     return jsonify({'error': 'Erro no pré-processamento dos dados'}), 400
-    dados_preprocessados = resultado
+    dados_preprocessados = preprocessing(dados)
+    if dados_preprocessados == False:
+        return jsonify({'error': 'Erro no pré-processamento dos dados'}), 400
+    
 
-    resultado2 = feature_engineering(dados_preprocessados)
-    if resultado2 == False:
+    dados_feature = feature_engineering(dados_preprocessados)
+    if dados_feature == False:
         return jsonify({'error': 'Erro na feature engineering dos dados'}), 400
-    dados_feature = resultado2
-    print(dados_feature)
+    
+    
     
     try : 
         predicao = model.predict(dados_feature.values.reshape(1, -1))
        
 
         if predicao != None:
-            
+            collection.insert({"features": dados ,"predict": predicao.tolist(), "date" : datetime.now().strftime('%d-%m-%Y')})
             return jsonify({'predicao': predicao.tolist()})
+
     except Exception:
         return jsonify({'error': 'Erro na predição do modelo'}), 400
 
