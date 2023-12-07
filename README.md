@@ -76,6 +76,10 @@ Tivemos o melhor desempenho com o algoritmo Support Vector Regressor, com os hip
 'svr__epsilon': 0.1, 
 'svr__kernel': 'linear'
 
+## Resultados obtidos
+
+Por ter sido treinado em um conjunto de dados com pouco tempo, e com pessoas que saíram da empresa, não é ideal utilizá-lo para prever o tempo restante de pessoas que ainda estão na plataforma. Entretanto, é possível utilizá-lo para ver se uma pessoa ficou mais ou menos tempo do que o previsto, e a partir disso, identificar possíveis razões pelas quais a pessoa saiu da plataforma antes do esperado.
+
 ## Documentação da API
 
 #### Retorna o tempo estimado, em dias, de permanência do usuario na plataforma.
