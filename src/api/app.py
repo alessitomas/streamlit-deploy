@@ -6,19 +6,19 @@ from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
 
-df = pd.read_csv("../notebooks/data/data-engineering.csv")
+# df = pd.read_csv("../notebooks/data/data-engineering.csv")
 
-for indice, linha in df['status_won'].items():
-    if linha == 1:
-        df.drop(indice, inplace=True)
+# for indice, linha in df['status_won'].items():
+#     if linha == 1:
+#         df.drop(indice, inplace=True)
 
-df.reset_index(drop=True, inplace=True)
+# df.reset_index(drop=True, inplace=True)
 
-df = df.drop(columns=['stay_time'], axis=1)
+# df = df.drop(columns=['stay_time'], axis=1)
         
-DADOS = df.iloc[69]
+# DADOS = df.iloc[69]
 
-print(DADOS)
+# print(DADOS)
 
 # Adicione o diretório raiz do projeto ao PYTHONPATH
 caminho_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -60,7 +60,16 @@ def predict():
         return jsonify({"erro": f"Erro ao processar a requisição"}), 500
 
     try:
+
+        with open("../api/colunas.txt", "r") as arquivo:
+        # Leia o conteúdo do arquivo e remova espaços em branco e quebras de linha
+            nomes_lista = arquivo.readlines()
+
+
+        nomes_lista = [string.replace(',', '').replace('\n', '')for string in nomes_lista]
         dados = pd.DataFrame([dados])
+
+        dados.columns = nomes_lista
     except Exception:
         return jsonify({"erro": "Erro no formato dos dados."}), 400
     
@@ -71,14 +80,13 @@ def predict():
     dados_feature = feature_engineering(dados_preprocessados)
     if dados_feature == False:
         return jsonify({'error': 'Erro na feature engineering dos dados'}), 400
-
     
-    novo_log = Log(data=str(dados_feature.iloc[0]))
-    db.session.add(novo_log)
-    db.session.commit()
-
     try : 
-        predicao = model.predict(DADOS.values.reshape(1, -1))
+        predicao = model.predict(dados.values.reshape(1, -1))
+        novo_log = Log(data=str(dados_feature.iloc[0]),predicao=int(predicao.tolist()[0]))
+        db.session.add(novo_log)
+        db.session.commit()
+
         if predicao != None:
             
             return jsonify({'predicao': predicao.tolist()})
