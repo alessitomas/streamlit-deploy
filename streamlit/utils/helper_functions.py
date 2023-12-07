@@ -1,11 +1,12 @@
 import pandas as pd
 from pymongo import MongoClient
 from data_preprocessing import preprocessing
-import pandas as pd
 from datetime import datetime
 import streamlit as st
 import plotly.graph_objects as go
 import bcrypt
+import plotly.express as px
+
 
 def get_data_from_mongo(url ,db_name, collection_name):
     client = MongoClient(url)  
@@ -24,7 +25,7 @@ def update_data_in_mongo(url ,db_name, collection_name, df):
     data = preprocessed_df.to_dict("records")
     collection.insert_many(data)
 
-
+#--------------------------------- Gráficos ---------------------------------#
 
 def plot_graphic_1(df):
     df['PESSOA_PIPEDRIVE_contract_start_date'] = pd.to_datetime(df['PESSOA_PIPEDRIVE_contract_start_date'])
@@ -43,6 +44,328 @@ def plot_graphic_1(df):
         barmode='group'
     )
     st.plotly_chart(fig)
+
+
+
+def plot_graphic_2(df):
+    # Convertendo as colunas de data para datetime
+    df['PESSOA_PIPEDRIVE_contract_start_date'] = pd.to_datetime(df['PESSOA_PIPEDRIVE_contract_start_date'])
+    df['PESSOA_PIPEDRIVE_contract_end_date'] = pd.to_datetime(df['PESSOA_PIPEDRIVE_contract_end_date'])
+
+    # Determinando a data atual para identificar churns
+    current_date = datetime.now()
+
+    # Identificando churns (datas de término de contrato no passado)
+    df['is_churn'] = df['PESSOA_PIPEDRIVE_contract_end_date'] < current_date
+
+    # Agrupando por mês e ano para análise de tendência de churn
+    df['End_Month_Year'] = df['PESSOA_PIPEDRIVE_contract_end_date'].dt.to_period('M')
+    churn_counts = df[df['is_churn']]['End_Month_Year'].value_counts().sort_index()
+
+    # Criando o gráfico de previsão de churn e mudar a cor da linha
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=churn_counts.index.astype(str),
+        y=churn_counts,
+        name='Churn',
+        line=dict(color='orchid', width=4)
+    ))
+
+    fig.update_layout(
+        title='Tendências de Churn por Mês',
+        xaxis_title='Ano e Mês',
+        yaxis_title='Quantidade de Churns',
+        barmode='group'
+    )
+    st.plotly_chart(fig)
+
+
+def plot_graphic_3(df):
+
+    # Contagem dos motivos de encerramento de contrato de assinatura
+    lost_reason_assinatura = df['FUNIL_ASSINATURA_PIPEDRIVE_lost_reason'].value_counts()
+
+    # Criando o gráfico de pizza
+    fig = go.Figure()
+    fig.add_trace(go.Pie(
+        labels=lost_reason_assinatura.index,
+        values=lost_reason_assinatura,
+        name='Motivos de Encerramento de Contrato de Assinatura'
+    ))
+
+    fig.update_layout(
+        title='Distribuição dos Motivos de Encerramento de Contrato de Assinatura (Gráfico de Pizza)'
+    )
+
+    st.plotly_chart(fig)
+
+def plot_graphic_4(df):
+
+    # Convertendo as datas para o formato datetime
+    df['PESSOA_PIPEDRIVE_contract_end_date'] = pd.to_datetime(df['PESSOA_PIPEDRIVE_contract_end_date'])
+
+    # Determinando a data atual para identificar churns
+    current_date = datetime.now()
+
+    # Identificando churns (datas de término de contrato no passado)
+    df['is_churn'] = df['PESSOA_PIPEDRIVE_contract_end_date'] < current_date
+
+    # Filtrando apenas os registros onde houve encerramento de contrato (churn)
+    churned_df = df[df['is_churn']]
+
+    # Contagem da distribuição de idade
+    age_distribution = churned_df['PESSOA_PIPEDRIVE_age'].value_counts()
+    age_distribution = age_distribution[age_distribution.index.notnull()]
+    age_distribution = age_distribution[age_distribution.index > 0]
+
+    # Criando o gráfico de distribuição de idade
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=age_distribution.index,
+        y=age_distribution,
+        name='Idade das Pessoas que Encerraram Contrato'
+    ))
+
+    fig.update_layout(
+        title='Distribuição de Idade das Pessoas que Encerraram Contrato',
+        xaxis_title='Idade',
+        yaxis_title='Quantidade',
+        xaxis={'categoryorder':'total descending'}
+    )
+
+    st.plotly_chart(fig)
+
+def plot_graphic_5(df):
+
+    # Convertendo as datas para o formato datetime
+    df['PESSOA_PIPEDRIVE_contract_end_date'] = pd.to_datetime(df['PESSOA_PIPEDRIVE_contract_end_date'])
+
+    # Determinando a data atual para identificar churns
+    current_date = datetime.now()
+
+    # Identificando churns (datas de término de contrato no passado)
+    df['is_churn'] = df['PESSOA_PIPEDRIVE_contract_end_date'] < current_date
+
+    # Filtrando apenas os registros onde houve encerramento de contrato (churn)
+    churned_df = df[df['is_churn']]
+
+    # Contagem da distribuição de cidades que os clientes sao
+    city_distribution = churned_df['PESSOA_PIPEDRIVE_city'].value_counts()
+    city_distribution = city_distribution[city_distribution.index.notnull()]
+    # se tiver menos que 10 clientes na cidade, colocar em uma categoria outros
+    city_distribution['Outros'] = city_distribution[city_distribution < 5].sum()
+    city_distribution = city_distribution[city_distribution >= 5]
+
+    # Criando o gráfico de distribuição de tempo que as pessoas ficaram na plataforma
+    fig = go.Figure()
+    fig.add_trace(go.Pie(
+        labels=city_distribution.index,
+        values=city_distribution,
+        name='Cidades em que os clientes vivem'
+    ))
+
+    fig.update_layout(
+        title='Cidades em que os clientes vivem',
+        xaxis_title='Cidades',
+        yaxis_title='Quantidade',
+        xaxis={'categoryorder':'total descending'}
+    )
+
+    st.plotly_chart(fig)
+
+def plot_graphic_6(df):
+
+    # Convertendo as datas para o formato datetime
+    df['PESSOA_PIPEDRIVE_contract_end_date'] = pd.to_datetime(df['PESSOA_PIPEDRIVE_contract_end_date'])
+
+    # Determinando a data atual para identificar churns
+    current_date = datetime.now()
+
+    # Identificando churns (datas de término de contrato no passado)
+    df['is_churn'] = df['PESSOA_PIPEDRIVE_contract_end_date'] < current_date
+
+    # Filtrando apenas os registros onde houve encerramento de contrato (churn)
+    churned_df = df[df['is_churn']]
+
+    # Contagem da distribuição de pessoa tem canal de contato de preferencia
+
+    contact_distribution = churned_df["PESSOA_PIPEDRIVE_Tem_Canal_de_Preferência"].value_counts()
+    contact_distribution = contact_distribution[contact_distribution.index.notnull()]
+
+    # se for 1, é sim, se for 0, é não
+    contact_distribution.index = ['Sim', 'Não']
+
+    # Criando o gráfico de distribuição de tempo que as pessoas ficaram na plataforma
+    fig = go.Figure()
+    fig.add_trace(go.Pie(
+        labels=contact_distribution.index,
+        values=contact_distribution,
+        name='Tem Canal de Preferência'
+    ))
+
+    fig.update_layout(
+        title='Tem Canal de Preferência',
+        xaxis_title='Canal de Preferência',
+        yaxis_title='Quantidade',
+        xaxis={'categoryorder':'total descending'}
+    )
+
+    st.plotly_chart(fig)
+    
+def plot_graphic_7(df):
+
+    # Convertendo as datas para o formato datetime
+    df['PESSOA_PIPEDRIVE_contract_end_date'] = pd.to_datetime(df['PESSOA_PIPEDRIVE_contract_end_date'])
+
+    # Determinando a data atual para identificar churns
+    current_date = datetime.now()
+
+    # Identificando churns (datas de término de contrato no passado)
+    df['is_churn'] = df['PESSOA_PIPEDRIVE_contract_end_date'] < current_date
+
+    # Filtrando apenas os registros onde houve encerramento de contrato (churn)
+    churned_df = df[df['is_churn']]
+
+    # Contagem da distribuição de cidades que os clientes sao
+    state_distribution = churned_df['PESSOA_PIPEDRIVE_state'].value_counts()
+    state_distribution = state_distribution[state_distribution.index.notnull()]
+    # se tiver menos que 10 clientes na cidade, colocar em uma categoria outros
+    state_distribution['Outros'] = state_distribution[state_distribution < 7].sum()
+    state_distribution = state_distribution[state_distribution >= 7]
+
+    # Criando o gráfico de distribuição de tempo que as pessoas ficaram na plataforma
+    fig = go.Figure()
+    fig.add_trace(go.Pie(
+        labels=state_distribution.index,
+        values=state_distribution,
+        name='Estados em que os clientes vivem'
+    ))
+
+    fig.update_layout(
+        title='Estados em que os clientes vivem',
+        xaxis_title='Estados',
+        yaxis_title='Quantidade',
+        xaxis={'categoryorder':'total descending'}
+    )
+
+    st.plotly_chart(fig)
+
+def plot_graphic_8(df):
+
+    # Convertendo as datas para o formato datetime
+    df['PESSOA_PIPEDRIVE_contract_end_date'] = pd.to_datetime(df['PESSOA_PIPEDRIVE_contract_end_date'])
+
+    # Determinando a data atual para identificar churns
+    current_date = datetime.now()
+
+    # Identificando churns (datas de término de contrato no passado)
+    df['is_churn'] = df['PESSOA_PIPEDRIVE_contract_end_date'] < current_date
+
+    # Filtrando apenas os registros onde houve encerramento de contrato (churn)
+    churned_df = df[df['is_churn']]
+
+    # Contagem da distribuição de genero
+
+    gender_distribution = churned_df['PESSOA_PIPEDRIVE_id_gender'].value_counts()
+    gender_distribution = gender_distribution[gender_distribution.index.notnull()]
+
+
+    # se for 64 é masculino, se for 63 é feminino
+
+    gender_distribution.index = ['Masculino', 'Feminino', 'Outros', 'Não informado']
+
+    # Criando o gráfico de distribuição de tempo que as pessoas ficaram na plataforma
+
+    fig = go.Figure()
+    fig.add_trace(go.Pie(
+        labels=gender_distribution.index,
+        values=gender_distribution,
+        name='Gênero dos clientes'
+    ))
+
+    fig.update_layout(
+        title='Gênero dos clientes',
+        xaxis_title='Gênero',
+        yaxis_title='Quantidade',
+        xaxis={'categoryorder':'total descending'}
+    )
+
+    st.plotly_chart(fig)
+
+def plot_graphic_9(df):
+
+    # Convertendo as datas para o formato datetime
+    df['PESSOA_PIPEDRIVE_contract_end_date'] = pd.to_datetime(df['PESSOA_PIPEDRIVE_contract_end_date'])
+
+    # Determinando a data atual para identificar churns
+    current_date = datetime.now()
+
+    # Identificando churns (datas de término de contrato no passado)
+    df['is_churn'] = df['PESSOA_PIPEDRIVE_contract_end_date'] < current_date
+
+    # Filtrando apenas os registros onde houve encerramento de contrato (churn)
+    churned_df = df[df['is_churn']]
+
+    # Contagem da distribuição de tipos de preferencia de contato
+
+    contact_type_distribution = churned_df["PESSOA_PIPEDRIVE_Canal de Preferência"].value_counts()
+    contact_type_distribution = contact_type_distribution[contact_type_distribution.index.notnull()]
+
+    # se for 0 é mensagem, se for 1 é ligação
+
+    contact_type_distribution.index = ['Mensagem', 'Ligação', 'Outros', 'Não informado']
+
+    # Criando o gráfico de distribuição de tempo que as pessoas ficaram na plataforma
+
+    fig = go.Figure()
+    fig.add_trace(go.Pie(
+        labels=contact_type_distribution.index,
+        values=contact_type_distribution,
+        name='Tipo de contato preferido'
+    ))
+
+    fig.update_layout(
+        title='Tipo de contato preferido',
+        xaxis_title='Tipo de contato',
+        yaxis_title='Quantidade',
+        xaxis={'categoryorder':'total descending'}
+    )
+
+    st.plotly_chart(fig)
+
+def plot_graphic_10(df):
+
+    df['PESSOA_PIPEDRIVE_contract_start_date'] = pd.to_datetime(df['PESSOA_PIPEDRIVE_contract_start_date'])
+    df['PESSOA_PIPEDRIVE_contract_end_date'] = pd.to_datetime(df['PESSOA_PIPEDRIVE_contract_end_date'])
+    df['Start_Year'] = df['PESSOA_PIPEDRIVE_contract_start_date'].dt.to_period('Y')
+    df['End_Year'] = df['PESSOA_PIPEDRIVE_contract_end_date'].dt.to_period('Y')
+    start_counts = df['Start_Year'].value_counts().sort_index()
+    end_counts = df['End_Year'].value_counts().sort_index()
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=start_counts.index.astype(str), y=start_counts, name='Entradas'))
+    fig.add_trace(go.Bar(x=end_counts.index.astype(str), y=end_counts, name='Saídas'))
+    fig.update_layout(
+        title='Histograma de Entrada e Saída de Assinaturas por Ano',
+        xaxis_title='Ano',
+        yaxis_title='Quantidade de Assinaturas',
+        barmode='group'
+    )
+    st.plotly_chart(fig)
+
+
+    
+
+
+
+
+
+
+
+    
+
+
+
+#-----------------------------------------------------------------------------#
 
 def create_user(url, db_name, collection_name, username, password, role):
     client = MongoClient(url)  
