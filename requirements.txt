@@ -6,3 +6,6 @@ numpy
 matplotlib
 geopy
 pymongo
+flask
+python-dotenv
+Flask-SQLAlchemy
