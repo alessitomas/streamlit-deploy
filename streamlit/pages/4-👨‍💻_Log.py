@@ -23,7 +23,7 @@ def show_logs_page():
         logs = [log for log in logs if search_query.lower() in str(log).lower()]
     if logs:
         logs_df = pd.DataFrame(logs, columns=['User', 'Action', 'Timestamp'])
-        st.dataframe(logs_df)
+        st.table(logs_df)
     else:
         st.write("No logs found")
 
