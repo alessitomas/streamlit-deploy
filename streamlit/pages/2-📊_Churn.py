@@ -24,7 +24,7 @@ df = get_data_from_mongo(url, db_name, collection_name_dataset)
 st.title("Vizualizações sobre os dados")
 
 
-st.write("Entrada e saída de clientes a cada mês")
+#st.write("Entrada e saída de clientes a cada mês")
 
 plot_graphic_10(df)
 plot_graphic_1(df)
