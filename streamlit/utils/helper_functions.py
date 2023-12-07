@@ -5,7 +5,6 @@ from datetime import datetime
 import streamlit as st
 import plotly.graph_objects as go
 import bcrypt
-import plotly.express as px
 
 
 def get_data_from_mongo(url ,db_name, collection_name):
