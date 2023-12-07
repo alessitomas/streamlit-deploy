@@ -5,6 +5,7 @@
 
 ## Stack utilizada
 
+
 **Dashboard:** Streamlit
 
 **Banco de Dados:** MongoDB
@@ -31,40 +32,54 @@ Instale as Dependencias
 
  - [Tabela de Dados](https://docs.google.com/spreadsheets/d/1ku3RbAe_BQFqSxfEgbJARmUMaKEidGqvWo-xh-E7XE0/edit#gid=841451143)
 
-## Pré-processamento dos Dados
+## Pré-processamento  e Feature Engineering dos Dados
 
 O pré-processamento foi realizado nos notebooks contidos
 na pasta 'pré-processamento' dentro da pasta 'notebooks', com o objetivo específico de lidar
 com valores nulos. Neste sentido, adotamos estratégias como descartar colunas com
 muitos valores nulos, consideradas irrelevantes para o modelo, ou preencher esses valores
-nulos com o número 0
+nulos com o número 0. Também fizemos feature engineering dos dados, onde criamos novas colunas, 
+descartamos outras, entre outros procedimentos. Os notebooks relativos à essas atividades estão na 
+pasta "feature engineering". As tabelas criadas pelos processos de pré-processamento e feature engineering se 
+encontram na pasta "data".
+
+**A documentação completa sobre todas as manipulações de dados se encontra no arquivo Documentação-Manipulação-de-dados, dentro da pasta doc**
 
 ## O modelo
 
 O notebook de treinamento do modelo está contido na pasta `notebooks/modelo_tempo_permanencia.ipynb` , nele foram treinados os algoritmos de `Regressor Linear`, `Random Forest` e `Support Vector Regressor`, juntamente com ajuste de hiperparâmetros com `GridSearch` da biblioteca `scikit-learn`, os resultados obtidos foram
 
-**Random Forest Regressor**:
-- RMSE: 78.69
-- R2: 0.4634757948768473
-- EVS: 0.518854857312801
-- Erro percentual médio: 27.41%
-#
-**Support Vector Regressor**:
-- RMSE: 85.16
-- R2: 0.4241861950076372
-- EVS: 0.4404396850224982
-- Erro percentual médio: 13.98%
-#
-**Linear Regression**:
-- RMSE: 166.92
-- R2: -1.2121648332607773
-- EVS: -1.1650483870435169
-- Erro percentual médio: 13.51%
+- **Random Forest Regressor**: 
+- RMSE: 96.99
+- R2: 0.25312721913815717
+ - EVS: 0.32890013577762933 
+- Erro percentual médio: 15.93% 
+
+- **Support Vector Regressor**: 
+- RMSE: 85.63
+- R2: 0.4178046750004776 
+- EVS: 0.43484915131508506
+- Erro percentual médio: 14.06% 
+
+- **Linear Regression**:
+- RMSE: 167.07
+- R2: -1.2161651340448807
+- EVS: -1.1666649285715551 
+- Erro percentual médio: 27.43% 
 
 `Utilizamos métricas como RMSE, R2, EVS e o erro percentual médio para avaliação.
 RMSE significa “erro quadrático médio”, R2 é o coeficiente de determinação e EVS significa
 “explained variance score”.`
 
+Tivemos o melhor desempenho com o algoritmo Support Vector Regressor, com os hiperparâmetros: 
+'poly_features__degree': 1, 
+'svr__C': 1, 
+'svr__epsilon': 0.1, 
+'svr__kernel': 'linear'
+
+## Resultados obtidos
+
+Por ter sido treinado em um conjunto de dados com pouco tempo, e com pessoas que saíram da empresa, não é ideal utilizá-lo para prever o tempo restante de pessoas que ainda estão na plataforma. Entretanto, é possível utilizá-lo para ver se uma pessoa ficou mais ou menos tempo do que o previsto, e a partir disso, identificar possíveis razões pelas quais a pessoa saiu da plataforma antes do esperado.
 
 ## Documentação da API
 
