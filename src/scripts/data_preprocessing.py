@@ -56,30 +56,36 @@ def preprocessing(data_dataframe):
         data_dataframe["PESSOA_PIPEDRIVE_id_gender"].fillna(64, inplace=True)
         data_dataframe["PESSOA_PIPEDRIVE_id_marrital_status"].fillna(80, inplace=True)
 
-        
+
         data_dataframe["PESSOA_PIPEDRIVE_state"].fillna(data_dataframe["PESSOA_PIPEDRIVE_state"].mode()[0], inplace=True)
 
 
         data_dataframe["PESSOA_PIPEDRIVE_city"].fillna(data_dataframe["PESSOA_PIPEDRIVE_city"].mode()[0], inplace=True)
 
+        def convert_to_int(x):
+            if pd.notna(x) and int(x) == 412:
+                return 1
+            else:
+                return 0
 
-        
 
-        data_dataframe['PESSOA_PIPEDRIVE_id_health_plan'].fillna(data_dataframe['PESSOA_PIPEDRIVE_id_health_plan'].mode()[0], inplace=True)
-        data_dataframe['PESSOA_PIPEDRIVE_has_public_health_plan'] = data_dataframe['PESSOA_PIPEDRIVE_id_health_plan'].apply(lambda x: 1 if int(x) == 412 else 0)
+        mode_value = data_dataframe['PESSOA_PIPEDRIVE_id_health_plan'].mode()
+        if not mode_value.empty:
+            data_dataframe['PESSOA_PIPEDRIVE_id_health_plan'].fillna(mode_value[0], inplace=True)
+        data_dataframe['PESSOA_PIPEDRIVE_has_public_health_plan'] = data_dataframe['PESSOA_PIPEDRIVE_id_health_plan'].apply(convert_to_int)
         data_dataframe = data_dataframe.drop(['PESSOA_PIPEDRIVE_id_health_plan'], axis=1)
         data_dataframe["PESSOA_PIPEDRIVE_tem_data_dataframe_de_termino_de_contrato"] = data_dataframe["PESSOA_PIPEDRIVE_contract_end_date"].apply(lambda x: 0 if pd.isna(x) else 1)
         data_dataframe.drop(["PESSOA_PIPEDRIVE_id_continuity_pf"], axis=1, inplace=True)
         data_dataframe["PESSOA_PIPEDRIVE_Canal de Preferência"].fillna(0, inplace=True)
         data_dataframe["PESSOA_PIPEDRIVE_Tem_Canal_de_Preferência"] = data_dataframe["PESSOA_PIPEDRIVE_Canal de Preferência"].apply(lambda x: 1 if int(x) > 0  else 0)
         data_dataframe["PESSOA_PIPEDRIVE_has_notes"] = data_dataframe["PESSOA_PIPEDRIVE_notes_count"].apply(lambda x: 1 if int(x) > 0 else 0)
-        
+
         # preprocessing 2
         data_dataframe = data_dataframe.drop(["ATENDIMENTOS_AGENDA_Faltas Psicoterapia","TWILIO_Ligações Inbound", "TWILIO_Data Última Ligações Inbound","COBRANÇA_VINDI_Qde Total de Faturas","COBRANÇA_VINDI_Qde Total de Tentativas de Cobrança","COBRANÇA_VINDI_Método de Pagamento","COBRANÇA_VINDI_Valor Médio da Mensalidade","COBRANÇA_VINDI_Qde Total de Faturas Pagas após Vencimento","COBRANÇA_VINDI_Qde Total de Faturas Inadimpletes","COBRANÇA_VINDI_Valor Total Inadimplência"], axis=1)
 
         data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].fillna(0, inplace=True)
-        
-    
+
+
 
         data_dataframe = data_dataframe.drop(columns="WHOQOL_Qde Respostas WHOQOL")
 
@@ -137,7 +143,7 @@ def preprocessing(data_dataframe):
         data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"].replace(False, 0, inplace=True)
 
         data_dataframe = data_dataframe.drop(columns=["WHOQOL_Ambiental","WHOQOL_Social","WHOQOL_Físico","WHOQOL_Psicológico","COMUNICARE_Problemas Abertos","TWILIO_Data Última Mensagens Inbound","ATENDIMENTOS_AGENDA_Datas Psicoterapia","TWILIO_Data Última Mensagens Inbound Tempo Passado"])
-        
+
         # preprocessing 3
         for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
             if pd.notna(valor) == False: 
@@ -270,7 +276,7 @@ def preprocessing(data_dataframe):
         data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] = data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].fillna(0)
 
         # preprocessing 4
-    
+
         data_dataframe["TWILIO_Mensagens Outbound"].fillna(0, inplace=True)
 
         data_dataframe["TWILIO_Data Última Mensagens Outbound"] = pd.to_datetime(data_dataframe["TWILIO_Data Última Mensagens Outbound"])
@@ -278,7 +284,7 @@ def preprocessing(data_dataframe):
         data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"] = datetime.now() - data_dataframe["TWILIO_Data Última Mensagens Outbound"]
 
         data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"].fillna('', inplace=True)
-        
+
         data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"] = data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"].astype(str)
 
         data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"] = data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"].str.extract('(\d+) days').astype(float)

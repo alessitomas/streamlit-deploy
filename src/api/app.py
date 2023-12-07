@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
 
-
-
 # Adicione o diretório raiz do projeto ao PYTHONPATH
 caminho_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, caminho_projeto)
@@ -53,11 +51,11 @@ def predict():
         # Leia o conteúdo do arquivo e remova espaços em branco e quebras de linha
             nomes_lista = arquivo.readlines()
 
-
         nomes_lista = [string.replace(',', '').replace('\n', '')for string in nomes_lista]
         dados = pd.DataFrame([dados])
 
         dados.columns = nomes_lista
+        
     except Exception:
         return jsonify({"erro": "Erro no formato dos dados."}), 400
     
