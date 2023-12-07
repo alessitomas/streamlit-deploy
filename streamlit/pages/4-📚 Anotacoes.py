@@ -42,16 +42,27 @@ with col2:
 # Crie um botão para carregar as anotações
 with col1:
     if st.button('Carregar Anotações'):
-        # Aqui você pode adicionar o código para carregar as anotações
-        # Por exemplo, você pode carregar as anotações de um arquivo:
         with open('notes.txt', 'r') as f:
-            notes = f.read().split('\n')  # Divida as anotações em linhas
+            notes = f.read().split('\n')
         st.success('Anotações carregadas com sucesso!')
-        for note in notes:  # Para cada anotação
-            st.text_area('', value=note)  # Crie uma caixa de texto com a anotação
+        for i, note in enumerate(notes):  # Obtenha o índice e a anotação
+            if note.strip():  # Se a anotação não for vazia
+                st.text_area('', value=note, key=f'note_{i}')  # Use o índice como chave
 
 # Crie um botão para limpar as anotações
 with col3:
-    if st.button('Limpar Anotações'):
-        notes = ''
-        st.success('Anotações limpas com sucesso!')
+    if st.button('Limpar Última Anotação'):
+        # Carregar todas as anotações
+        with open('notes.txt', 'r') as f:
+            notes = f.read().split('\n')
+
+        # Remover a penultima anotação
+        if notes:
+            notes.pop(-2)
+
+        # Salvar as anotações restantes
+        with open('notes.txt', 'w') as f:
+            for note in notes:
+                f.write(note + '\n')
+
+        st.success('Última anotação limpa com sucesso!')
