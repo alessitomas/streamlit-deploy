@@ -241,6 +241,10 @@ def preprocessing(data_dataframe):
 
     data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] = data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].fillna(0)
 
+    for indice, valor in data_dataframe['ATENDIMENTOS_AGENDA_Qde Prescrições'].items():
+        if pd.isna(valor):
+            data_dataframe.loc[indice, 'ATENDIMENTOS_AGENDA_Qde Prescrições'] = data_dataframe.loc[indice, 'ATENDIMENTOS_AGENDA_Qde Prescrições'] = 0
+
     # preprocessing 4
    
     data_dataframe["TWILIO_Mensagens Outbound"].fillna(0, inplace=True)
