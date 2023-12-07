@@ -329,6 +329,10 @@ def preprocessing(data_dataframe):
 
         return data_dataframe
     except Exception:
+        print("DEU RUIM")
         return False
 
-preprocessing(pd.read_csv("../data/Ana Health_Tabela Modelo Previsão Churn - Tabela.csv"))
+
+data = pd.read_csv("../notebooks/data/Ana Health_Tabela Modelo Previsão Churn - Tabela.csv")
+print(data.iloc[50])
+preprocessing(data.iloc[50])

@@ -178,7 +178,7 @@ def feature_engineering(dataframe):
 
 
     
-feature_engineering(pd.read_csv("../data/data-preprocessed.csv"))
+feature_engineering(pd.read_csv("../notebooks/data/data-preprocessed.csv"))
 
 
 

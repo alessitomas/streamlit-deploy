@@ -11,6 +11,11 @@ data = pd.read_csv("../notebooks/data/data-engineering.csv")
 def modelo(data=data):
 
     try:
+        for indice, linha in data['status_won'].items():
+            if linha == 1:
+                data.drop(indice, inplace=True)
+
+        data.reset_index(drop=True, inplace=True)
 
         X = data.drop(columns=['stay_time'], axis=1)
         y = data['stay_time']
@@ -34,6 +39,8 @@ def modelo(data=data):
 
         modelo_grid = GridSearchCV(pipe_svr, parametros_grid_svr, cv=5, scoring='neg_mean_squared_error', verbose=1, n_jobs=-1)
         modelo_grid.fit(X_train, y_train)
+
+        
 
         # Verifique se o modelo foi treinado com sucesso
         if hasattr(modelo_grid, 'best_estimator_'):
