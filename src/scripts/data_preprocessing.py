@@ -128,6 +128,9 @@ def preprocessing(data_dataframe):
     data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"] = data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"].str.extract('(\d+) days').astype(float)
 
     data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"] = data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"] < data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"].median()
+    data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"].fillna(0)
+    data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"].replace(True, 1, inplace=True)
+    data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"].replace(False, 0, inplace=True)
 
     data_dataframe = data_dataframe.drop(columns=["WHOQOL_Ambiental","WHOQOL_Social","WHOQOL_Físico","WHOQOL_Psicológico","COMUNICARE_Problemas Abertos","TWILIO_Data Última Mensagens Inbound","ATENDIMENTOS_AGENDA_Datas Psicoterapia","TWILIO_Data Última Mensagens Inbound Tempo Passado"])
     
@@ -153,30 +156,6 @@ def preprocessing(data_dataframe):
         data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = pd.to_datetime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], format='%Y-%m-%d', errors='coerce')
         data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].strftime('%Y-%m-%d')
 
-    tempo_permanencia = []
-
-    for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"].items():
-        if pd.notna(valor):
-            index = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"].find(";")
-            if index != -1:
-                data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"][:index]
-
-    for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
-        if pd.notna(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"]):
-            tempo_1 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
-            tempo_2 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"], '%Y-%m-%d')
-            tempo_permanencia.append(str(tempo_1 - tempo_2))
-        else:
-            tempo_1 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
-            tempo_2 = datetime.strptime(data_dataframe.loc[indice, "PESSOA_PIPEDRIVE_contract_start_date"], '%Y-%m-%d')
-            tempo_permanencia.append(str(tempo_1 - tempo_2))
-
-    data_dataframe['stay_time'] = tempo_permanencia
-
-    for indice, valor in data_dataframe["stay_time"].items():
-        index = data_dataframe.loc[indice, "stay_time"].find(",")
-        if index != -1:
-            data_dataframe.loc[indice, "stay_time"] = data_dataframe.loc[indice, "stay_time"][:index]
 
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_reason"].items():
         if pd.notna(valor):  
@@ -279,6 +258,9 @@ def preprocessing(data_dataframe):
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Mensagens Outbound"], axis=1)
 
     data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"] = data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"] < data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"].median()
+    data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"].fillna(0)
+    data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"].replace(True, 1, inplace=True)
+    data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"].replace(False, 0, inplace=True)
 
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Mensagens Outbound Tempo passado"], axis=1)
 
@@ -297,6 +279,9 @@ def preprocessing(data_dataframe):
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Ligações Outbound"], axis=1)
 
     data_dataframe["TWILIO_Data Última Ligações Outbound Recente"] = data_dataframe["TWILIO_Data Última Ligações Outbound Tempo passado"] < data_dataframe["TWILIO_Data Última Ligações Outbound Tempo passado"].median()
+    data_dataframe["TWILIO_Data Última Ligações Outbound Recente"].fillna(0)
+    data_dataframe["TWILIO_Data Última Ligações Outbound Recente"].replace(True, 1, inplace=True)
+    data_dataframe["TWILIO_Data Última Ligações Outbound Recente"].replace(False, 0, inplace=True)
 
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Ligações Outbound Tempo passado"], axis=1)
 
@@ -312,8 +297,8 @@ def preprocessing(data_dataframe):
 
     #exportando df pronto
 
-    data_dataframe.to_csv('data-preprocessed.csv', index=False)
+    data_dataframe.to_csv('../notebooks/data/data-preprocessed.csv', index=False)
 
     return data_dataframe
 
-preprocessing(pd.read_csv('../notebooks/data/data.csv'))
+preprocessing(pd.read_csv('../notebooks/data/Ana Health_Tabela Modelo Previsão Churn - Tabela.csv'))
