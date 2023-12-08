@@ -1,16 +1,13 @@
 import streamlit as st
 import sys
 import os
-from dotenv import load_dotenv
 
-# Carregar variáveis de ambiente de um arquivo .env
-load_dotenv()
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '', 'utils')))
 
 from helper_functions import create_user, logged_out_option,  verify_credentials, add_log
 
 
-url = os.getenv('URL_DB')
+url = st.secrets['URL_DB']
 db_name = "AnaHealth"
 collection_name_user = "User"
 collection_name_log = "Log"

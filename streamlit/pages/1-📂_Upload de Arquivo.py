@@ -4,10 +4,7 @@ from pymongo import MongoClient
 import sys
 import os
 
-from dotenv import load_dotenv
 
-# Carregar variáveis de ambiente de um arquivo .env
-load_dotenv()
 # Append the utils directory to the system path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'utils')))
 
@@ -24,9 +21,10 @@ uploaded_file = st.file_uploader("Escolha um arquivo CSV", type="csv", help='Dat
 if uploaded_file is not None:
     
     df = pd.read_csv(uploaded_file)
-    url = os.getenv('MEU_SEGREDO_URL')
-    db_name = os.getenv('MEU_SEGREDO_DB_NAME')
-    collection_name = os.getenv('MEU_SEGREDO_COLLECTION_NAME_DATASET')
+    url = st.secrets['URL_DB']
+    db_name = "AnaHealth"
+    collection_name = "Dataset"
+
     
     update_data_in_mongo(url, db_name, collection_name, df)
     new_df = get_data_from_mongo(url, db_name, collection_name)

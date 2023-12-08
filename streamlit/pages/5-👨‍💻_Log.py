@@ -11,9 +11,10 @@ from helper_functions import get_logs, check_authentication, logged_out_option
 check_authentication()
 logged_out_option()
 
-url = os.getenv('URL_DB')
+url = st.secrets['URL_DB']
 db_name = "AnaHealth"
 collection_name_log = "Log"
+
 
 def show_logs_page():
     st.title("Log de Uso da Dashboard")
