@@ -39,13 +39,15 @@ def concatena_df(df):
 caminho_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, caminho_projeto)
 
-url = "mongodb+srv://AnaHealth:${MONGO_PASSWORD}>@anahealth.2qbmc6n.mongodb.net/?retryWrites=true&w=majority"
+
+mongo_password = os.environ.get('MONGO_PASSWORD')
+url = f"mongodb+srv://AnaHealth:{mongo_password}@anahealth.2qbmc6n.mongodb.net/?retryWrites=true&w=majority"
 
 client = MongoClient(url)
 db_name = client["AnaHealth"]
 collection = client["Api-Log"]
 
-API_KEY_ANA = os.getenv('API_KEY_ANA')
+API_KEY_ANA = os.environ.get('ANA_API_KEY')
 
 app = Flask(__name__)
 swagger = Swagger(app)
