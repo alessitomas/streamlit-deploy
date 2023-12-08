@@ -6,9 +6,9 @@ name: api-deploy
 on:
   push:
     branches: [ "deploy_deploy" ]
+    paths:
+      - 'src/api/**'
 
-permissions:
-  contents: read
 
 jobs:
   build:
