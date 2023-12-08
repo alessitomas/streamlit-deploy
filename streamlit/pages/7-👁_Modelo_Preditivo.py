@@ -1,3 +1,4 @@
+from tkinter import font
 import pandas as pd
 from datetime import datetime 
 import numpy as np
@@ -88,6 +89,7 @@ for k in range(1, 11):
     kmeans.fit(data_scaled)
     inertia.append(kmeans.inertia_)
 
+st.markdown("### Método Elbow para Determinar o Número de Clusters")
 # Elbow method plot
 plt.figure(figsize=(10, 6))
 plt.plot(range(1, 11), inertia, marker='o', color='blue')
@@ -119,6 +121,7 @@ ari_test = adjusted_rand_score(y_test, X_test['cluster'])
 print(f"Adjusted Rand Index (Training): {ari_train}")
 print(f"Adjusted Rand Index (Testing): {ari_test}")
 
+st.markdown("### Distribuição do Tempo de Permanência por Cluster (conjunto de treinamento)")
 # Boxplot for training data
 plt.figure(figsize=(10, 6))
 sns.boxplot(x='cluster', y=data['stay_time'], data=X_train, palette='viridis')
@@ -128,6 +131,7 @@ plt.ylabel('Tempo de Permanência', fontsize=14)
 st.pyplot(plt.gcf())  # Display the plot in Streamlit
 plt.clf()  # Clear the current figure
 
+st.markdown("### Distribuição do Tempo de Permanência por Cluster (conjunto de teste)")
 # Boxplot for testing data
 plt.figure(figsize=(10, 6))
 sns.boxplot(x='cluster', y=data['stay_time'], data=X_test, palette='viridis')
@@ -146,6 +150,9 @@ X_pca = pca.fit_transform(X)
 pca_df = pd.DataFrame(X_pca, columns=['pc1', 'pc2'])
 pca_df['target'] = y
 
+
+st.markdown("### PCA scatterplot")
+
 # PCA scatterplot
 plt.figure(figsize=(18, 14))
 sns.scatterplot(x='pc1', y='pc2', hue='target', data=pca_df, palette='coolwarm')
@@ -153,4 +160,3 @@ plt.title('PCA aplicado no dataset', fontsize=20)
 plt.xlabel('Componente principal 1', fontsize=18)
 plt.ylabel('Componente principal 2', fontsize=18)
 st.pyplot(plt.gcf())  # Display the plot in Streamlit
-
