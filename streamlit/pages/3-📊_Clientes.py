@@ -10,7 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'u
 
 from helper_functions import get_data_from_mongo, plot_graphic_4, plot_graphic_5,plot_graphic_7, plot_graphic_8, check_authentication, logged_out_option
 
-url = st.secrets['URL_DB']
+url = st.secrets.URL_DB
 db_name = "AnaHealth"
 collection_name_dataset = "Dataset"
 

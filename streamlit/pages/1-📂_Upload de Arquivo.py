@@ -21,7 +21,7 @@ uploaded_file = st.file_uploader("Escolha um arquivo CSV", type="csv", help='Dat
 if uploaded_file is not None:
     
     df = pd.read_csv(uploaded_file)
-    url = st.secrets['URL_DB']
+    url = st.secrets.URL_DB
     db_name = "AnaHealth"
     collection_name = "Dataset"
 
