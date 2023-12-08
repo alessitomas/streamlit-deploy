@@ -1,6 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
+
 name: api-deploy
 
 on:
@@ -8,7 +9,7 @@ on:
     branches: [ "deploy_deploy" ]
     paths:
       - 'src/api/**'
-
+  workflow_dispatch:
 
 jobs:
   build:
@@ -42,6 +43,8 @@ jobs:
         key: ${{ secrets.KEY_TEST }}
         port: 22
         script: |
-          docker stop api-deploy
-          docker rm --force api-deploy
-          docker run -e API_KEY_ANA=${{ secrets.API_KEY_ANA }} -e MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} -d -p 8080:8080 --name api-deploy alessitomas/api-deploy:${{ github.sha }}
+              if [ $(docker ps -aq -f name=api-deploy) ]; then
+                  docker stop api-deploy
+                  docker rm --force api-deploy
+              fi
+              docker run -e API_KEY_ANA=${{ secrets.API_KEY_ANA }} -e MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} -d -p 8082:8082 --name api-deploy alessitomas/api-deploy:${{ github.sha }}

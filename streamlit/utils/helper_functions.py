@@ -66,8 +66,14 @@ def plot_graphic_2(df):
     fig.add_trace(go.Scatter(
         x=churn_counts.index.astype(str),
         y=churn_counts,
-        name='Churn',
-        line=dict(color='orchid', width=4)
+        name='Churn em Scatter Line',
+        line=dict(width=2)
+    ))
+
+    fig.add_trace(go.Bar(
+        x=churn_counts.index.astype(str),
+        y=churn_counts,
+        name='Churn em Barra'
     ))
 
     fig.update_layout(

@@ -1,7 +1,6 @@
 
-## sprint4-support-vector-team
+## Sprint4-support-vector-team
 `Nosso modelo preditivo é capaz de, através de uma robusta tabela de dados fornecida pela empresa Ana Health, estimar o número de horas que o usuário ficará na plataforma desde a data em que ele entrou, com a finalidade de auxiliar a empresa na redução do churn.`
-
 
 
 ## Stack utilizada
