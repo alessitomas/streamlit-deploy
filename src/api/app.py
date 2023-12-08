@@ -4,6 +4,9 @@ from flask import Flask, request, jsonify
 import joblib
 from pymongo import MongoClient
 import pandas as pd
+from datetime import datetime
+import json
+
 
 
 
@@ -43,36 +46,52 @@ def predict():
     
     try:
         dados = request.get_json()
+        # json_serializado = json.dumps(dados, indent=4)  # Use indent para formatar o JSON com recuo
+
+        # # Abre o arquivo em modo de escrita
+        # with open('requisicao.json', 'w') as arquivo:
+        #     arquivo.write(json_serializado)
         if dados is None:
             return jsonify({"erro": "Nenhum dado JSON fornecido."}), 400
     except Exception:
         return jsonify({"erro": f"Erro ao processar a requisição"}), 500
 
     try:
-        dados = pd.DataFrame([dados])        
-    
-    
+        data = pd.DataFrame([dados])
+        # nome_arquivo_csv = "saida.csv"
+
+        # # Salvar o DataFrame em um arquivo CSV
+        # data.to_csv(nome_arquivo_csv, index=False)
     except Exception:
         return jsonify({"erro": "Erro no formato dos dados."}), 400
     
-    resultado = preprocessing(dados)
-    # if resultado == False:
+    # dados_preprocessados = preprocessing(data)
+    # if dados_preprocessados == False:
     #     return jsonify({'error': 'Erro no pré-processamento dos dados'}), 400
-    dados_preprocessados = resultado
+    # print(dados_preprocessados.shape)
 
-    resultado2 = feature_engineering(dados_preprocessados)
-    if resultado2 == False:
-        return jsonify({'error': 'Erro na feature engineering dos dados'}), 400
-    dados_feature = resultado2
-    print(dados_feature)
+    # dados_feature = feature_engineering(dados_preprocessados)
+
+    # print(dados_feature.shape)
+    # if dados_feature == False:
+    #     return jsonify({'error': 'Erro na feature engineering dos dados'}), 400
     
-    try : 
-        predicao = model.predict(dados_feature.values.reshape(1, -1))
-       
+    data = data.drop(columns=["stay_time"],axis=1)
 
-        if predicao != None:
-            
-            return jsonify({'predicao': predicao.tolist()})
+    nome_arquivo_csv = "saida.csv"
+
+        # Salvar o DataFrame em um arquivo CSV
+    data.to_csv(nome_arquivo_csv, index=False)
+    df_certo = pd.read_csv("saida.csv")
+    print(df_certo.shape)
+    try : 
+        
+        predicao = model.predict(df_certo)
+        
+        # if predicao != None:
+        #     collection.insert({"features": dados ,"predict": predicao.tolist(), "date" : datetime.now().strftime('%d-%m-%Y')})
+        return jsonify({'predicao': predicao.tolist()})
+
     except Exception:
         return jsonify({'error': 'Erro na predição do modelo'}), 400
 

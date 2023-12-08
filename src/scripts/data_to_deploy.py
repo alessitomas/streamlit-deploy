@@ -6,9 +6,9 @@ from sklearn.svm import SVR
 from sklearn.model_selection import GridSearchCV
 import os
 
-data = pd.read_csv("../notebooks/data/data-engineering.csv")
 
-def modelo(data=data):
+
+def modelo(data):
 
     try:
         for indice, linha in data['status_won'].items():
@@ -58,5 +58,8 @@ def modelo(data=data):
     except Exception as e:
         print(f"Ocorreu um erro: {e}")
 
+
+ffff = pd.read_csv("../notebooks/data/data-engineering.csv")
+print(ffff.shape)
 # Chame a função modelo
-modelo(data)
+modelo(ffff)
