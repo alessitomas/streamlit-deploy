@@ -2,9 +2,9 @@ import os
 import sys
 from flask import Flask, request, jsonify
 import joblib
-from dotenv import load_dotenv
 from pymongo import MongoClient
 import pandas as pd
+
 
 
 # Adicione o diretório raiz do projeto ao PYTHONPATH
@@ -14,14 +14,14 @@ sys.path.insert(0, caminho_projeto)
 from scripts.data_preprocessing import preprocessing
 from scripts.data_feature_engineering import feature_engineering
 
-load_dotenv()
 
-url = os.getenv("URL_DB")
+url = "mongodb+srv://AnaHealth:${MONGO_PASSWORD}>@anahealth.2qbmc6n.mongodb.net/?retryWrites=true&w=majority"
+
 client = MongoClient(url)
 db_name = client["AnaHealth"]
 collection = client["Api-Log"]
 
-API_KEY_ANA = os.getenv('API_KEY_ANA')
+API_KEY_ANA = "${API_KEY_ANA}"
 
 app = Flask(__name__)
 
