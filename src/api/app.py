@@ -50,22 +50,24 @@ def predict():
         return jsonify({"erro": f"Erro ao processar a requisição"}), 500
 
     try:
-        data = pd.DataFrame(pd.DataFrame([dados]).iloc[0]).T
+        data = pd.DataFrame([dados])
 
-        print(data)  
+        print(type(data)  )
         
     
     except Exception:
         return jsonify({"erro": "Erro no formato dos dados."}), 400
     
-    dados_preprocessados = preprocessing(dados)
+    dados_preprocessados = preprocessing(data)
     # if dados_preprocessados == False:
     #     return jsonify({'error': 'Erro no pré-processamento dos dados'}), 400
-    
+    print(dados_preprocessados.shape)
 
     dados_feature = feature_engineering(dados_preprocessados)
-    if dados_feature == False:
-        return jsonify({'error': 'Erro na feature engineering dos dados'}), 400
+
+    print(dados_feature.shape)
+    # if dados_feature == False:
+    #     return jsonify({'error': 'Erro na feature engineering dos dados'}), 400
     
     
     
