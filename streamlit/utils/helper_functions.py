@@ -351,19 +351,6 @@ def plot_graphic_10(df):
     )
     st.plotly_chart(fig)
 
-
-    
-
-
-
-
-
-
-
-    
-
-
-
 #-----------------------------------------------------------------------------#
 
 def create_user(url, db_name, collection_name, username, password, role):
