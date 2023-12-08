@@ -8,6 +8,7 @@ on:
     branches: [ "deploy_deploy" ]
     paths:
       - 'src/api/**'
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
