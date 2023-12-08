@@ -9,6 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '', 'uti
 
 from helper_functions import create_user, logged_out_option,  verify_credentials, add_log
 
+
 url = os.getenv('URL_DB')
 db_name = "AnaHealth"
 collection_name_user = "User"

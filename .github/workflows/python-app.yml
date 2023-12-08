@@ -6,9 +6,9 @@ name: api-deploy
 on:
   push:
     branches: [ "deploy_deploy" ]
+    paths:
+      - 'src/api/**'
 
-permissions:
-  contents: read
 
 jobs:
   build:
@@ -44,4 +44,4 @@ jobs:
         script: |
           docker stop api-deploy
           docker rm --force api-deploy
-          docker run  -e MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} -d -p 8080:8080 --name api-deploy alessitomas/api-deploy:${{ github.sha }}
+          docker run -e API_KEY_ANA=${{ secrets.API_KEY_ANA }} -e MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} -d -p 8080:8080 --name api-deploy alessitomas/api-deploy:${{ github.sha }}
