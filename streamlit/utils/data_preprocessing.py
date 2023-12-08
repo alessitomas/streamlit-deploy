@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime
 import numpy as np
+import datetime as dt
 
 def column_label_to_index(col_label):
     col_index = 0
@@ -28,9 +29,9 @@ def mergeHeader_Columns(data):
     data.columns = data.iloc[0]
     data = data.drop(data.index[0])
     return data
-from sklearn.impute import SimpleImputer
 
 def preprocessing(data_dataframe):
+    from sklearn.impute import SimpleImputer
     data_dataframe = mergeHeader_Columns(data_dataframe)
     # preprocessing 1
     data_dataframe = data_dataframe.drop(["PESSOA_PIPEDRIVE_id_person_recommendation","PESSOA_PIPEDRIVE_Recebe Comunicados?", "PESSOA_PIPEDRIVE_Interesses", "PESSOA_PIPEDRIVE_Pontos de Atenção", "FUNIL_ONBOARDING_PIPEDRIVE_id_label"], axis=1)
@@ -74,18 +75,7 @@ def preprocessing(data_dataframe):
 
     data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].fillna(0, inplace=True)
     
-     
-    data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia"] = pd.to_datetime(data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia"])
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"] = datetime.now() - data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia"]
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"].fillna('', inplace=True)
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"] = data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"].astype(str)
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"] = data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"].str.extract('(\d+) days').astype(float)
-
-    data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Recente"] = data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"] < data_dataframe["ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado"].median()
+   
 
     data_dataframe = data_dataframe.drop(columns="WHOQOL_Qde Respostas WHOQOL")
 
@@ -138,58 +128,34 @@ def preprocessing(data_dataframe):
     data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"] = data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"].str.extract('(\d+) days').astype(float)
 
     data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"] = data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"] < data_dataframe["TWILIO_Data Última Mensagens Inbound Tempo Passado"].median()
+    data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"].fillna(0)
+    data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"].replace(True, 1, inplace=True)
+    data_dataframe["TWILIO_Data Última Mensagens Inbound Recente"].replace(False, 0, inplace=True)
 
-    data_dataframe = data_dataframe.drop(columns=["WHOQOL_Ambiental","WHOQOL_Social","WHOQOL_Físico","WHOQOL_Psicológico","COMUNICARE_Problemas Abertos","TWILIO_Data Última Mensagens Inbound","ATENDIMENTOS_AGENDA_Datas Psicoterapia","ATENDIMENTOS_AGENDA_Datas Psicoterapia Tempo passado","TWILIO_Data Última Mensagens Inbound Tempo Passado"])
+    data_dataframe = data_dataframe.drop(columns=["WHOQOL_Ambiental","WHOQOL_Social","WHOQOL_Físico","WHOQOL_Psicológico","COMUNICARE_Problemas Abertos","TWILIO_Data Última Mensagens Inbound","ATENDIMENTOS_AGENDA_Datas Psicoterapia","TWILIO_Data Última Mensagens Inbound Tempo Passado"])
     
     # preprocessing 3
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
         if pd.notna(valor) == False: 
             if pd.notna(data_dataframe.loc[indice, "PESSOA_PIPEDRIVE_contract_end_date"]):
-                data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] =  data_dataframe.loc[indice, "PESSOA_PIPEDRIVE_contract_end_date"]
-            else:
-                data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = "Em aberto"
+                data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "PESSOA_PIPEDRIVE_contract_end_date"]
+
+    data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].fillna(dt.date.today(), inplace=True)
 
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
-        if data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] != "Em aberto":
-            index = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].find(";")
-            if index != -1:
-                data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"][:index]
+        index = str(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"]).find(";")
+        if index != -1:
+            data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"][:index]
 
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
-        if data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] != "Em aberto":
-            tamanho = len(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"])
-            if tamanho > 10:
-                data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"][:10]	
-
-    tempo_permanencia = []
-
-    for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"].items():
-        if pd.notna(valor):
-            index = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"].find(";")
-            if index != -1:
-                data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"][:index]
+        tamanho = len(str(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"]))
+        if tamanho > 10:
+            data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"][:10]	
 
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
-        if pd.notna(valor):
-            if data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] != "Em aberto":	
-                if pd.notna(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"]):
-                    tempo_1 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
-                    tempo_2 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"], '%Y-%m-%d')
-                    tempo_permanencia.append(str(tempo_1 - tempo_2))
-                else:
-                    tempo_1 = datetime.strptime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
-                    tempo_2 = datetime.strptime(data_dataframe.loc[indice, "PESSOA_PIPEDRIVE_contract_start_date"], '%Y-%m-%d')
-                    tempo_permanencia.append(str(tempo_1 - tempo_2))
-            else:
-                tempo_permanencia.append("Em aberto")
+        data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = pd.to_datetime(data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], format='%Y-%m-%d', errors='coerce')
+        data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"] = data_dataframe.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].strftime('%Y-%m-%d')
 
-    data_dataframe['stay_time'] = tempo_permanencia
-
-    for indice, valor in data_dataframe["stay_time"].items():
-        if valor != "Em aberto":
-            index = data_dataframe.loc[indice, "stay_time"].find(",")
-            if index != -1:
-                data_dataframe.loc[indice, "stay_time"] = data_dataframe.loc[indice, "stay_time"][:index]
 
     for indice, valor in data_dataframe["FUNIL_ASSINATURA_PIPEDRIVE_lost_reason"].items():
         if pd.notna(valor):  
@@ -253,6 +219,32 @@ def preprocessing(data_dataframe):
 
     data_dataframe["ATENDIMENTOS_AGENDA_Datas Atendimento Médico"] = data_dataframe["ATENDIMENTOS_AGENDA_Datas Atendimento Médico"].fillna("Nunca ocorreu")
 
+    for indice, valor in data_dataframe["FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"].items():
+        if pd.notna(valor) == False:
+            if pd.notna(data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_status"]) == False and pd.notna(data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_add_time"]):
+                data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"] = "Processo em aberto"
+            if data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_status"] == "won":
+                data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"] = "Processo concluído"
+            else:
+                data_dataframe.loc[indice, "FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"] = "Processo não iniciado"
+
+        contagem = data_dataframe["FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"].value_counts()
+
+        agrupamento = contagem[contagem < 23].index
+        data_dataframe.loc[data_dataframe["FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"].isin(agrupamento), "FUNIL_ONBOARDING_PIPEDRIVE_lost_reason"] = "Outro"
+
+    data_dataframe["ATENDIMENTOS_AGENDA_Qde Atendimentos Acolhimento"] = data_dataframe["ATENDIMENTOS_AGENDA_Qde Atendimentos Acolhimento"].fillna(0)
+
+    data_dataframe["ATENDIMENTOS_AGENDA_Faltas Acolhimento"] = data_dataframe["ATENDIMENTOS_AGENDA_Faltas Acolhimento"].fillna(0)
+
+    data_dataframe["ATENDIMENTOS_AGENDA_Datas Acolhimento"] = data_dataframe["ATENDIMENTOS_AGENDA_Datas Acolhimento"].fillna("Nunca ocorreu")
+
+    data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] = data_dataframe["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].fillna(0)
+
+    for indice, valor in data_dataframe['ATENDIMENTOS_AGENDA_Qde Prescrições'].items():
+        if pd.isna(valor):
+            data_dataframe.loc[indice, 'ATENDIMENTOS_AGENDA_Qde Prescrições'] = data_dataframe.loc[indice, 'ATENDIMENTOS_AGENDA_Qde Prescrições'] = 0
+
     # preprocessing 4
    
     data_dataframe["TWILIO_Mensagens Outbound"].fillna(0, inplace=True)
@@ -270,6 +262,9 @@ def preprocessing(data_dataframe):
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Mensagens Outbound"], axis=1)
 
     data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"] = data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"] < data_dataframe["TWILIO_Data Última Mensagens Outbound Tempo passado"].median()
+    data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"].fillna(0)
+    data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"].replace(True, 1, inplace=True)
+    data_dataframe["TWILIO_Data Última Mensagens Outbound Recente"].replace(False, 0, inplace=True)
 
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Mensagens Outbound Tempo passado"], axis=1)
 
@@ -288,6 +283,9 @@ def preprocessing(data_dataframe):
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Ligações Outbound"], axis=1)
 
     data_dataframe["TWILIO_Data Última Ligações Outbound Recente"] = data_dataframe["TWILIO_Data Última Ligações Outbound Tempo passado"] < data_dataframe["TWILIO_Data Última Ligações Outbound Tempo passado"].median()
+    data_dataframe["TWILIO_Data Última Ligações Outbound Recente"].fillna(0)
+    data_dataframe["TWILIO_Data Última Ligações Outbound Recente"].replace(True, 1, inplace=True)
+    data_dataframe["TWILIO_Data Última Ligações Outbound Recente"].replace(False, 0, inplace=True)
 
     data_dataframe = data_dataframe.drop(["TWILIO_Data Última Ligações Outbound Tempo passado"], axis=1)
 
@@ -301,9 +299,6 @@ def preprocessing(data_dataframe):
 
     data_dataframe = data_dataframe.drop(data_dataframe[(data_dataframe['FUNIL_ASSINATURA_PIPEDRIVE_status'] == 'lost') & (data_dataframe['PESSOA_PIPEDRIVE_contract_end_date'].isnull())].index)
 
-    #exportando df pronto
-
+    
     return data_dataframe
-
-
 
