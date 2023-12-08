@@ -13,7 +13,7 @@ def concatena_df(df):
     from scripts.data_feature_engineering import feature_engineering
 
     from scripts.data_preprocessing import mergeHeader_Columns, preprocessing
-    data = pd.read_csv("../notebooks/data/Ana Health_Tabela Modelo Previsão Churn - Tabela.csv")
+    data = pd.read_csv("../notebooks/data/dado_recente.csv")
 
     data2 = mergeHeader_Columns(data)
     id_person = df["PESSOA_PIPEDRIVE_id_person"]
