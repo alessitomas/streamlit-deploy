@@ -43,7 +43,7 @@ jobs:
         key: ${{ secrets.KEY_TEST }}
         port: 22
         script: |
-              if [ $(docker ps -q -f name=api-deploy) ]; then
+              if [ $(docker ps -aq -f name=api-deploy) ]; then
                   docker stop api-deploy
                   docker rm --force api-deploy
               fi
