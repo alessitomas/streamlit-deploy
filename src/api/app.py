@@ -5,18 +5,39 @@ import joblib
 from pymongo import MongoClient
 import pandas as pd
 from datetime import datetime
-import json
+from flask import Flask, request, jsonify
+from flasgger import Swagger ,swag_from
 
 
+def concatena_df(df):
+    from scripts.data_feature_engineering import feature_engineering
+
+    from scripts.data_preprocessing import mergeHeader_Columns, preprocessing
+    data = pd.read_csv("../notebooks/data/Ana Health_Tabela Modelo Previsão Churn - Tabela.csv")
+
+    data2 = mergeHeader_Columns(data)
+    id_person = df["PESSOA_PIPEDRIVE_id_person"]
+    data_final = pd.concat([data2,df],axis=0)
+
+    data_pre = preprocessing(data_final)
+
+    data_fe = feature_engineering(data_pre)
+    nome_arquivo_csv = "saida.csv"
+
+    # Salvar o DataFrame em um arquivo CSV
+    data_fe.to_csv(nome_arquivo_csv, index=False)
+    data_real_final = data_fe[data_fe["PESSOA_PIPEDRIVE_id_person"].isin([id_person])]
+
+    data_real_final = data_real_final.drop(columns=["PESSOA_PIPEDRIVE_id_person","stay_time"])
+
+    data_real_final.reset_index(inplace=True)
+
+    return data_real_final
 
 
 # Adicione o diretório raiz do projeto ao PYTHONPATH
 caminho_projeto = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, caminho_projeto)
-
-from scripts.data_preprocessing import preprocessing
-from scripts.data_feature_engineering import feature_engineering
-
 
 url = "mongodb+srv://AnaHealth:${MONGO_PASSWORD}>@anahealth.2qbmc6n.mongodb.net/?retryWrites=true&w=majority"
 
@@ -24,9 +45,10 @@ client = MongoClient(url)
 db_name = client["AnaHealth"]
 collection = client["Api-Log"]
 
-API_KEY_ANA = "${API_KEY_ANA}"
+API_KEY_ANA = os.getenv('API_KEY_ANA')
 
 app = Flask(__name__)
+swagger = Swagger(app)
 
 
 # Carrega o modelo usando um caminho absoluto
@@ -38,9 +60,40 @@ def verificar_api_key():
         return True
     else:
         return False
+    
+@app.route('/apidocs/')
+def apidocs():
+    return jsonify(swagger(app))
 
 @app.route('/predict', methods=['POST'])
+@swag_from('swagger/predict.yml')
 def predict():
+    """
+    Endpoint para previsão.
+    ---
+    parameters:
+      - name: data
+        in: body
+        required: true
+        type: string
+        description: JSON de entrada para previsão.
+    responses:
+      200:
+        description: Resposta bem-sucedida.
+        schema:
+          properties:
+            predicao:
+              type: array
+              items:
+                type: number
+    """
+
+
+
+
+
+
+
     if not verificar_api_key():
         return jsonify({'error': 'Acesso negado'}), 403
     
@@ -58,10 +111,7 @@ def predict():
 
     try:
         data = pd.DataFrame([dados])
-        # nome_arquivo_csv = "saida.csv"
-
-        # # Salvar o DataFrame em um arquivo CSV
-        # data.to_csv(nome_arquivo_csv, index=False)
+      
     except Exception:
         return jsonify({"erro": "Erro no formato dos dados."}), 400
     
@@ -76,17 +126,13 @@ def predict():
     # if dados_feature == False:
     #     return jsonify({'error': 'Erro na feature engineering dos dados'}), 400
     
-    data = data.drop(columns=["stay_time"],axis=1)
+    
+    data_r = concatena_df(data)    
 
-    nome_arquivo_csv = "saida.csv"
-
-        # Salvar o DataFrame em um arquivo CSV
-    data.to_csv(nome_arquivo_csv, index=False)
-    df_certo = pd.read_csv("saida.csv")
-    print(df_certo.shape)
+    
     try : 
         
-        predicao = model.predict(df_certo)
+        predicao = model.predict(data_r)
         
         # if predicao != None:
         #     collection.insert({"features": dados ,"predict": predicao.tolist(), "date" : datetime.now().strftime('%d-%m-%Y')})
