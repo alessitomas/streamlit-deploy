@@ -10,14 +10,7 @@ from sqlalchemy import false
 
 def feature_engineering(data_pre):
 
-
-
-        # feature engineering 1 + 3
-
-            
-    data_pre["stay_time"] = data_pre["stay_time"].str.extract('(\d+) days').astype(float)
-
-    data_pre["stay_time"].fillna(0,inplace=True)
+    # feature engineering 1 + 3
 
     data_pre["ATENDIMENTOS_AGENDA_Qde Atendimentos Acolhimento"].fillna(0,inplace=True)
     data_pre["ATENDIMENTOS_AGENDA_Faltas Acolhimento"].fillna(0,inplace=True)
@@ -92,30 +85,50 @@ def feature_engineering(data_pre):
     data_pre['PESSOA_PIPEDRIVE_city Codificada'] = ce.fit_transform(data_pre['PESSOA_PIPEDRIVE_city'])
 
 
-    data_pre = data_pre.drop(columns=["PESSOA_PIPEDRIVE_postal_code","PESSOA_PIPEDRIVE_city","PESSOA_PIPEDRIVE_id_gender","PESSOA_PIPEDRIVE_contract_start_date","PESSOA_PIPEDRIVE_contract_end_date","FUNIL_ASSINATURA_PIPEDRIVE_id_stage","FUNIL_ASSINATURA_PIPEDRIVE_id_org","FUNIL_ASSINATURA_PIPEDRIVE_lost_time","FUNIL_ASSINATURA_PIPEDRIVE_start_of_service","FUNIL_ONBOARDING_PIPEDRIVE_add_time","ATENDIMENTOS_AGENDA_Datas Atendimento Médico","ATENDIMENTOS_AGENDA_Datas Acolhimento","process_time"])
+
+    data_pre = data_pre.drop(columns=["PESSOA_PIPEDRIVE_postal_code","PESSOA_PIPEDRIVE_city","PESSOA_PIPEDRIVE_id_gender","FUNIL_ASSINATURA_PIPEDRIVE_id_stage","FUNIL_ASSINATURA_PIPEDRIVE_id_org","FUNIL_ONBOARDING_PIPEDRIVE_add_time","ATENDIMENTOS_AGENDA_Datas Atendimento Médico","ATENDIMENTOS_AGENDA_Datas Acolhimento","process_time"])
 
     
 
 
     # feature engineering 2 + 3
 
-    data_pre = pd.get_dummies(data_pre,columns=["FUNIL_ASSINATURA_PIPEDRIVE_status"], prefix='status')
-
-
-    data_pre = pd.get_dummies(data_pre,columns=['FUNIL_ASSINATURA_PIPEDRIVE_lost_reason'], prefix='lost_reason')
-
+    data_pre = pd.get_dummies(data_pre,columns=["FUNIL_ASSINATURA_PIPEDRIVE_status"], prefix='assinatura_status')
+    data_pre = pd.get_dummies(data_pre,columns=['FUNIL_ASSINATURA_PIPEDRIVE_lost_reason'], prefix='assinatura_lost_reason')
     data_pre = pd.get_dummies(data_pre,columns=['PESSOA_PIPEDRIVE_Canal de Preferência'], prefix='canal_preferencia')    
+    data_pre = pd.get_dummies(data_pre,columns=['FUNIL_ONBOARDING_PIPEDRIVE_status'], prefix='onboarding_status')
+    data_pre = pd.get_dummies(data_pre,columns=['FUNIL_ONBOARDING_PIPEDRIVE_lost_reason'], prefix='onboarding_lost_reason')
 
-    data_pre = pd.get_dummies(data_pre,columns=['FUNIL_ONBOARDING_PIPEDRIVE_status'], prefix='Status')
+    tempo_permanencia = []
 
+    for indice, valor in data_pre["FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"].items():
+        if pd.notna(valor):
+            index = data_pre.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"].find(";")
+            if index != -1:
+                data_pre.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"] = data_pre.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"][:index]
 
-    data_pre = pd.get_dummies(data_pre,columns=['FUNIL_ONBOARDING_PIPEDRIVE_lost_reason'], prefix='lost_reason')
+    for indice, valor in data_pre["FUNIL_ASSINATURA_PIPEDRIVE_lost_time"].items():
+        if pd.notna(data_pre.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"]):
+            tempo_1 = datetime.strptime(data_pre.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
+            tempo_2 = datetime.strptime(data_pre.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service"], '%Y-%m-%d')
+            tempo_permanencia.append(str(tempo_1 - tempo_2))
+        else:
+            tempo_1 = datetime.strptime(data_pre.loc[indice, "FUNIL_ASSINATURA_PIPEDRIVE_lost_time"], '%Y-%m-%d')
+            tempo_2 = datetime.strptime(data_pre.loc[indice, "PESSOA_PIPEDRIVE_contract_start_date"], '%Y-%m-%d')
+            tempo_permanencia.append(str(tempo_1 - tempo_2))
+    
+    data_pre['stay_time'] = tempo_permanencia
 
+    for indice, valor in data_pre["stay_time"].items():
+        index = data_pre.loc[indice, "stay_time"].find(",")
+        if index != -1:
+            data_pre.loc[indice, "stay_time"] = data_pre.loc[indice, "stay_time"][:index]
 
-    data_pre.drop('ATENDIMENTOS_AGENDA_Qde Todos Atendimentos', axis='columns', inplace=True)
+    data_pre["stay_time"] = data_pre["stay_time"].str.extract('(\d+) days').astype(float)
+    data_pre["stay_time"] = np.nan_to_num(data_pre["stay_time"], nan=0)
 
-
-
+    data_pre.drop(columns=["PESSOA_PIPEDRIVE_contract_start_date", "FUNIL_ASSINATURA_PIPEDRIVE_lost_time", "FUNIL_ASSINATURA_PIPEDRIVE_start_of_service", "PESSOA_PIPEDRIVE_contract_end_date"], inplace=True)
+   
     # feature engineering 4 + 3
 
     if data_pre['WHOQOL_Físico_New'].dtype == 'object':
@@ -195,7 +208,4 @@ def feature_engineering(data_pre):
     data_pre.to_csv('../notebooks/data/data-engineering.csv', index=False)
     return data_pre
 
-
-
-
-# feature_engineering(pd.read_csv("../notebooks/data/data-preprocessed.csv"))
+feature_engineering(pd.read_csv("../notebooks/data/data-preprocessed.csv"))
