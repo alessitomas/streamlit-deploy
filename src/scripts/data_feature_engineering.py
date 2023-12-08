@@ -92,7 +92,7 @@ def feature_engineering(data_pre):
     data_pre['PESSOA_PIPEDRIVE_city Codificada'] = ce.fit_transform(data_pre['PESSOA_PIPEDRIVE_city'])
 
 
-    data_pre = data_pre.drop(columns=["PESSOA_PIPEDRIVE_postal_code","PESSOA_PIPEDRIVE_id_person","PESSOA_PIPEDRIVE_city","PESSOA_PIPEDRIVE_id_gender","PESSOA_PIPEDRIVE_contract_start_date","PESSOA_PIPEDRIVE_contract_end_date","FUNIL_ASSINATURA_PIPEDRIVE_id_stage","FUNIL_ASSINATURA_PIPEDRIVE_id_org","FUNIL_ASSINATURA_PIPEDRIVE_lost_time","FUNIL_ASSINATURA_PIPEDRIVE_start_of_service","FUNIL_ONBOARDING_PIPEDRIVE_add_time","ATENDIMENTOS_AGENDA_Datas Atendimento Médico","ATENDIMENTOS_AGENDA_Datas Acolhimento","process_time"])
+    data_pre = data_pre.drop(columns=["PESSOA_PIPEDRIVE_postal_code","PESSOA_PIPEDRIVE_city","PESSOA_PIPEDRIVE_id_gender","PESSOA_PIPEDRIVE_contract_start_date","PESSOA_PIPEDRIVE_contract_end_date","FUNIL_ASSINATURA_PIPEDRIVE_id_stage","FUNIL_ASSINATURA_PIPEDRIVE_id_org","FUNIL_ASSINATURA_PIPEDRIVE_lost_time","FUNIL_ASSINATURA_PIPEDRIVE_start_of_service","FUNIL_ONBOARDING_PIPEDRIVE_add_time","ATENDIMENTOS_AGENDA_Datas Atendimento Médico","ATENDIMENTOS_AGENDA_Datas Acolhimento","process_time"])
 
     
 
@@ -198,4 +198,4 @@ def feature_engineering(data_pre):
 
 
 
-feature_engineering(pd.read_csv("../notebooks/data/data-preprocessed.csv"))
+# feature_engineering(pd.read_csv("../notebooks/data/data-preprocessed.csv"))

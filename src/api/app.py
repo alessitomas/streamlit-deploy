@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 import pandas as pd
 from datetime import datetime
+import json
+
 
 
 # Adicione o diretório raiz do projeto ao PYTHONPATH
@@ -44,6 +46,11 @@ def predict():
     
     try:
         dados = request.get_json()
+        # json_serializado = json.dumps(dados, indent=4)  # Use indent para formatar o JSON com recuo
+
+        # # Abre o arquivo em modo de escrita
+        # with open('requisicao.json', 'w') as arquivo:
+        #     arquivo.write(json_serializado)
         if dados is None:
             return jsonify({"erro": "Nenhum dado JSON fornecido."}), 400
     except Exception:
@@ -51,33 +58,39 @@ def predict():
 
     try:
         data = pd.DataFrame([dados])
+        # nome_arquivo_csv = "saida.csv"
 
-        print(type(data)  )
-        
-    
+        # # Salvar o DataFrame em um arquivo CSV
+        # data.to_csv(nome_arquivo_csv, index=False)
     except Exception:
         return jsonify({"erro": "Erro no formato dos dados."}), 400
     
-    dados_preprocessados = preprocessing(data)
+    # dados_preprocessados = preprocessing(data)
     # if dados_preprocessados == False:
     #     return jsonify({'error': 'Erro no pré-processamento dos dados'}), 400
-    print(dados_preprocessados.shape)
+    # print(dados_preprocessados.shape)
 
-    dados_feature = feature_engineering(dados_preprocessados)
+    # dados_feature = feature_engineering(dados_preprocessados)
 
-    print(dados_feature.shape)
+    # print(dados_feature.shape)
     # if dados_feature == False:
     #     return jsonify({'error': 'Erro na feature engineering dos dados'}), 400
     
-    
-    
+    data = data.drop(columns=["stay_time"],axis=1)
+
+    nome_arquivo_csv = "saida.csv"
+
+        # Salvar o DataFrame em um arquivo CSV
+    data.to_csv(nome_arquivo_csv, index=False)
+    df_certo = pd.read_csv("saida.csv")
+    print(df_certo.shape)
     try : 
         
-        predicao = model.predict(dados_feature.values.reshape(1, -1))
+        predicao = model.predict(df_certo)
         
-        if predicao != None:
-            collection.insert({"features": dados ,"predict": predicao.tolist(), "date" : datetime.now().strftime('%d-%m-%Y')})
-            return jsonify({'predicao': predicao.tolist()})
+        # if predicao != None:
+        #     collection.insert({"features": dados ,"predict": predicao.tolist(), "date" : datetime.now().strftime('%d-%m-%Y')})
+        return jsonify({'predicao': predicao.tolist()})
 
     except Exception:
         return jsonify({'error': 'Erro na predição do modelo'}), 400

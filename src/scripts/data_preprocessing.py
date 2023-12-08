@@ -28,7 +28,7 @@ def mergeHeader_Columns(data):
 def preprocessing(data_dataframe):
     from sklearn.impute import SimpleImputer
 
-    data_dataframe = mergeHeader_Columns(data_dataframe)
+    # data_dataframe = mergeHeader_Columns(data_dataframe)
     # preprocessing 1
     data_dataframe = data_dataframe.drop(["PESSOA_PIPEDRIVE_id_person_recommendation","PESSOA_PIPEDRIVE_Recebe Comunicados?", "PESSOA_PIPEDRIVE_Interesses", "PESSOA_PIPEDRIVE_Pontos de Atenção", "FUNIL_ONBOARDING_PIPEDRIVE_id_label"], axis=1)
     data_dataframe['PESSOA_PIPEDRIVE_birthdate'] = pd.to_datetime(data_dataframe['PESSOA_PIPEDRIVE_birthdate'])
@@ -238,4 +238,4 @@ def preprocessing(data_dataframe):
     
 
 
-preprocessing(pd.read_csv("../notebooks/data/Ana Health_Tabela Modelo Previsão Churn - Tabela.csv"))
+# preprocessing(pd.read_csv("../notebooks/data/Ana Health_Tabela Modelo Previsão Churn - Tabela.csv"))
