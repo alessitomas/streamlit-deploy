@@ -5,7 +5,8 @@ import joblib
 from pymongo import MongoClient
 import pandas as pd
 from datetime import datetime
-
+from flask import Flask, request, jsonify
+from flasgger import Swagger ,swag_from
 
 
 def concatena_df(df):
@@ -47,6 +48,7 @@ collection = client["Api-Log"]
 API_KEY_ANA = os.getenv('API_KEY_ANA')
 
 app = Flask(__name__)
+swagger = Swagger(app)
 
 
 # Carrega o modelo usando um caminho absoluto
@@ -58,9 +60,40 @@ def verificar_api_key():
         return True
     else:
         return False
+    
+@app.route('/apidocs/')
+def apidocs():
+    return jsonify(swagger(app))
 
 @app.route('/predict', methods=['POST'])
+@swag_from('swagger/predict.yml')
 def predict():
+    """
+    Endpoint para previsão.
+    ---
+    parameters:
+      - name: data
+        in: body
+        required: true
+        type: string
+        description: JSON de entrada para previsão.
+    responses:
+      200:
+        description: Resposta bem-sucedida.
+        schema:
+          properties:
+            predicao:
+              type: array
+              items:
+                type: number
+    """
+
+
+
+
+
+
+
     if not verificar_api_key():
         return jsonify({'error': 'Acesso negado'}), 403
     

@@ -14,7 +14,7 @@ from helper_functions import get_data_from_mongo, check_authentication, logged_o
 check_authentication()
 logged_out_option()
 
-url = st.secrets['URL_DB']
+url = st.secrets.URL_DB
 db_name = "AnaHealth"
 collection_name_dataset = "Dataset"
 
