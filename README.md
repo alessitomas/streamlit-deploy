@@ -7,6 +7,7 @@
 ## Stack utilizada
 
 
+
 **Dashboard:** Streamlit
 
 **Banco de Dados:** MongoDB
