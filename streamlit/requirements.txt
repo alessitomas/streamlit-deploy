@@ -1,0 +1,6 @@
+pymongo
+streamlit
+scikit-learn
+plotly
+bcrypt
+python-dotenv

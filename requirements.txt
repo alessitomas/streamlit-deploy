@@ -1,0 +1,11 @@
+pandas
+missingno
+streamlit
+scikit-learn
+numpy
+matplotlib
+geopy
+pymongo
+flask
+python-dotenv
+Flask-SQLAlchemy
