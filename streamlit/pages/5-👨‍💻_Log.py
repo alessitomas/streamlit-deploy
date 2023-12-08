@@ -9,7 +9,7 @@ from helper_functions import get_logs, check_authentication, logged_out_option
 
 
 check_authentication()
-logged_out_option()
+
 
 url = st.secrets['URL_DB']
 db_name = "AnaHealth"
@@ -19,6 +19,7 @@ collection_name_log = "Log"
 def show_logs_page():
     st.title("Log de Uso da Dashboard")
     search_query = st.sidebar.text_input("Search logs")
+    logged_out_option()
     logs = get_logs(url, db_name, collection_name_log)
     if search_query:
         logs = [log for log in logs if search_query.lower() in str(log).lower()]
