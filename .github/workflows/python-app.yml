@@ -47,4 +47,4 @@ jobs:
                   docker stop api-deploy
                   docker rm --force api-deploy
               fi
-              docker run -e API_KEY_ANA=${{ secrets.API_KEY_ANA }} -e MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} -d -p 8082:8082 --name api-deploy alessitomas/api-deploy:${{ github.sha }}
+              docker run -e API_KEY_ANA=${{ secrets.API_KEY_ANA }} -e MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} -d -p 8082:5000 --name api-deploy alessitomas/api-deploy:${{ github.sha }}
