@@ -6,7 +6,6 @@ from pymongo import MongoClient
 import pandas as pd
 from flask import Flask, request, jsonify
 from flasgger import Swagger , swag_from
-from dotenv import load_dotenv
 
 def processa_df(df):
       
@@ -21,8 +20,6 @@ def processa_df(df):
     return data_real_final
 
 mongo_password = os.environ.get('MONGO_PASSWORD')
-
-
 url = f"mongodb+srv://AnaHealth:{mongo_password}@anahealth.2qbmc6n.mongodb.net/?retryWrites=true&w=majority"
 
 client = MongoClient(url)
