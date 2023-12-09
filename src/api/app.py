@@ -47,6 +47,8 @@ API_KEY_ANA = os.environ.get('ANA_API_KEY')
 
 app = Flask(__name__)
 swagger = Swagger(app)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
 
 
 # Carrega o modelo usando um caminho absoluto
