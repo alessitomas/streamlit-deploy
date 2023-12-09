@@ -54,7 +54,7 @@ swagger = Swagger(app)
 
 
 # Carrega o modelo usando um caminho absoluto
-model = joblib.load(os.path.join(caminho_projeto, 'notebooks/data/SVR_model.joblib'))
+model = joblib.load(os.path.join(caminho_projeto, 'SVR_model.joblib'))
 
 def verificar_api_key():    
     api_key = request.headers.get('X-API-KEY')
