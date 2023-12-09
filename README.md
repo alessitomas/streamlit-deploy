@@ -86,12 +86,12 @@ Por ter sido treinado em um conjunto de dados com pouco tempo, e com pessoas que
 #### Retorna o tempo estimado, em dias, de permanência do usuario na plataforma.
 
 ```http
-  POST /api/data
+  POST http://54.191.142.192:8082/predict
 ```
 
 | Parâmetro   | Tipo       | Descrição                           |
 | :---------- | :--------- | :---------------------------------- |
-| `api_key` | `string` | **Obrigatório**. A chave da sua API |
+| `X_API_KEY` | `string` | **Obrigatório**. A chave da sua API |
 
 
 
