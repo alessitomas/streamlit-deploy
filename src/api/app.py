@@ -10,29 +10,15 @@ from dotenv import load_dotenv
 
 
 
-def concatena_df(df):
-    from scripts.data_feature_engineering import feature_engineering
-
-    from scripts.data_preprocessing import mergeHeader_Columns, preprocessing
+def processa_df(df):
       
-    data = pd.read_csv("../notebooks/data/dado_recente.csv")
-
-    data2 = mergeHeader_Columns(data)
-    id_person = df["PESSOA_PIPEDRIVE_id_person"]
-    data_final = pd.concat([data2,df],axis=0)
-
-    data_pre = preprocessing(data_final)
-
-    data_fe = feature_engineering(data_pre)
     nome_arquivo_csv = "saida.csv"
 
     # Salvar o DataFrame em um arquivo CSV
-    data_fe.to_csv(nome_arquivo_csv, index=False)
-    data_real_final = data_fe[data_fe["PESSOA_PIPEDRIVE_id_person"].isin([id_person])]
+    df.to_csv(nome_arquivo_csv, index=False)
+    
 
-    data_real_final = data_real_final.drop(columns=["PESSOA_PIPEDRIVE_id_person","stay_time"])
-
-    data_real_final.reset_index(inplace=True)
+    data_real_final = df.drop(columns=["PESSOA_PIPEDRIVE_id_person","stay_time"])
 
     return data_real_final
 
@@ -48,7 +34,6 @@ db_name = client["AnaHealth"]
 collection = client["Api-Log"]
 load_dotenv()
 API_KEY_ANA = os.getenv('API_KEY_ANA')
-print(API_KEY_ANA)
 
 app = Flask(__name__)
 swagger = Swagger(app)
@@ -125,12 +110,12 @@ def predict():
     #     return jsonify({'error': 'Erro na feature engineering dos dados'}), 400
     
     
-    data_r = concatena_df(data)    
-
+    
+    data = processa_df(data)
     
     try : 
         
-        predicao = model.predict(data_r)
+        predicao = model.predict(data)
         
         # if predicao != None:
         #     collection.insert({"features": dados ,"predict": predicao.tolist(), "date" : datetime.now().strftime('%d-%m-%Y')})
