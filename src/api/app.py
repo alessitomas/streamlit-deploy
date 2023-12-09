@@ -4,15 +4,17 @@ from flask import Flask, request, jsonify
 import joblib
 from pymongo import MongoClient
 import pandas as pd
-from datetime import datetime
 from flask import Flask, request, jsonify
-from flasgger import Swagger ,swag_from
+from flasgger import Swagger , swag_from
+from dotenv import load_dotenv
+
 
 
 def concatena_df(df):
     from scripts.data_feature_engineering import feature_engineering
 
     from scripts.data_preprocessing import mergeHeader_Columns, preprocessing
+      
     data = pd.read_csv("../notebooks/data/dado_recente.csv")
 
     data2 = mergeHeader_Columns(data)
@@ -37,17 +39,19 @@ def concatena_df(df):
 
 
 mongo_password = os.environ.get('MONGO_PASSWORD')
+
+
 url = f"mongodb+srv://AnaHealth:{mongo_password}@anahealth.2qbmc6n.mongodb.net/?retryWrites=true&w=majority"
 
 client = MongoClient(url)
 db_name = client["AnaHealth"]
 collection = client["Api-Log"]
-
-API_KEY_ANA = os.environ.get('ANA_API_KEY')
+load_dotenv()
+API_KEY_ANA = os.getenv('API_KEY_ANA')
+print(API_KEY_ANA)
 
 app = Flask(__name__)
 swagger = Swagger(app)
-
 
 # Carrega o modelo usando um caminho absoluto
 model = joblib.load('SVR_model.joblib')
@@ -85,12 +89,6 @@ def predict():
               items:
                 type: number
     """
-
-
-
-
-
-
 
     if not verificar_api_key():
         return jsonify({'error': 'Acesso negado'}), 403

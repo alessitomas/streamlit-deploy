@@ -2,11 +2,7 @@ import pandas as pd
 import numpy as np
 from category_encoders import CountEncoder
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from scipy import stats
 from datetime import datetime
-from sklearn.utils import resample
-from sqlalchemy import false
-
 
 def feature_engineering(data_pre):
 
@@ -44,39 +40,36 @@ def feature_engineering(data_pre):
     data_pre["PESSOA_PIPEDRIVE IDOSO"].replace(False, 0, inplace=True)
     
 
-    # data_pre["TWILIO_Ligações Outbound Qtd Significativa"] = int(data_pre["TWILIO_Ligações Outbound"]) >= data_pre["TWILIO_Ligações Outbound"].mean()
-    # data_pre["TWILIO_Ligações Outbound Qtd Significativa"].fillna(0)
-    # data_pre["TWILIO_Ligações Outbound Qtd Significativa"].replace(True, 1, inplace=True)
-    # data_pre["TWILIO_Ligações Outbound Qtd Significativa"].replace(False, 0, inplace=True)
+    data_pre["TWILIO_Ligações Outbound Qtd Significativa"] = data_pre["TWILIO_Ligações Outbound"] >= data_pre["TWILIO_Ligações Outbound"].mean()
+    data_pre["TWILIO_Ligações Outbound Qtd Significativa"].fillna(0)
+    data_pre["TWILIO_Ligações Outbound Qtd Significativa"].replace(True, 1, inplace=True)
+    data_pre["TWILIO_Ligações Outbound Qtd Significativa"].replace(False, 0, inplace=True)
 
     data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Nenhum"] = data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] == 0
     data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Nenhum"].fillna(0)
     data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Nenhum"].replace(True, 1, inplace=True)
     data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Nenhum"].replace(False, 0, inplace=True)
 
-    # data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"] = (data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] > 0) & (data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] <= data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].mean() )
-    # data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"].fillna(0)
-    # data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"].replace(True, 1, inplace=True)
-    # data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"].replace(False, 0, inplace=True)
+    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"] = (data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] > 0) & (data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] <= data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].mean() )
+    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"].fillna(0)
+    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"].replace(True, 1, inplace=True)
+    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"].replace(False, 0, inplace=True)
 
-    # data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"] = data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] > data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].mean() 
-    # data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"].fillna(0)
-    # data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"].replace(True, 1, inplace=True)
-    # data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"].replace(False, 0, inplace=True)
+    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"] = data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] > data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].mean() 
+    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"].fillna(0)
+    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"].replace(True, 1, inplace=True)
+    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"].replace(False, 0, inplace=True)
 
     data_pre["ATENDIMENTOS_AGENDA_Qde Prescrições"].fillna(0,inplace=True)
 
     data_pre = data_pre.drop(["ATENDIMENTOS_AGENDA_Datas Prescrição"],axis=1)
 
 
-    data_pre = data_pre[data_pre["PESSOA_PIPEDRIVE_id_gender"].isin([64,63])]   
-    data_pre["PESSOA_PIPEDRIVE_id_gender Binário"] = data_pre["PESSOA_PIPEDRIVE_id_gender"].map({64: 0, 63: 1})
+    data_pre = data_pre[data_pre["PESSOA_PIPEDRIVE_id_gender"].isin(['64','63'])]   
+    data_pre["PESSOA_PIPEDRIVE_id_gender Binário"] = data_pre["PESSOA_PIPEDRIVE_id_gender"].map({'64': 0, '63': 1})
 
-    data_pre = data_pre[data_pre["FUNIL_ASSINATURA_PIPEDRIVE_id_stage"].isin([65,64])]   
-    data_pre["FUNIL_ASSINATURA_PIPEDRIVE_id_stage Binário"] = data_pre["FUNIL_ASSINATURA_PIPEDRIVE_id_stage"].map({65: 0, 64: 1})
-
-    
-    
+    data_pre = data_pre[data_pre["FUNIL_ASSINATURA_PIPEDRIVE_id_stage"].isin(['65','64'])]   
+    data_pre["FUNIL_ASSINATURA_PIPEDRIVE_id_stage Binário"] = data_pre["FUNIL_ASSINATURA_PIPEDRIVE_id_stage"].map({'65': 0, '64': 1})
 
     data_pre = pd.get_dummies(data_pre, columns=['PESSOA_PIPEDRIVE_id_marrital_status'], prefix='Status')
     data_pre = pd.get_dummies(data_pre, columns=['PESSOA_PIPEDRIVE_state'], prefix='Estado')
@@ -84,12 +77,7 @@ def feature_engineering(data_pre):
     ce = CountEncoder()
     data_pre['PESSOA_PIPEDRIVE_city Codificada'] = ce.fit_transform(data_pre['PESSOA_PIPEDRIVE_city'])
 
-
-
     data_pre = data_pre.drop(columns=["PESSOA_PIPEDRIVE_postal_code","PESSOA_PIPEDRIVE_city","PESSOA_PIPEDRIVE_id_gender","FUNIL_ASSINATURA_PIPEDRIVE_id_stage","FUNIL_ASSINATURA_PIPEDRIVE_id_org","FUNIL_ONBOARDING_PIPEDRIVE_add_time","ATENDIMENTOS_AGENDA_Datas Atendimento Médico","ATENDIMENTOS_AGENDA_Datas Acolhimento","process_time"])
-
-    
-
 
     # feature engineering 2 + 3
 
