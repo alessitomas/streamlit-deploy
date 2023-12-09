@@ -8,8 +8,6 @@ from flask import Flask, request, jsonify
 from flasgger import Swagger , swag_from
 from dotenv import load_dotenv
 
-
-
 def processa_df(df):
       
     nome_arquivo_csv = "saida.csv"
@@ -22,8 +20,6 @@ def processa_df(df):
 
     return data_real_final
 
-
-
 mongo_password = os.environ.get('MONGO_PASSWORD')
 
 
@@ -32,8 +28,6 @@ url = f"mongodb+srv://AnaHealth:{mongo_password}@anahealth.2qbmc6n.mongodb.net/?
 client = MongoClient(url)
 db_name = client["AnaHealth"]
 collection = client["Api-Log"]
-load_dotenv()
-API_KEY_ANA = os.getenv('API_KEY_ANA')
 
 app = Flask(__name__)
 swagger = Swagger(app)
@@ -42,13 +36,6 @@ if __name__ == '__main__':
 
 # Carrega o modelo usando um caminho absoluto
 model = joblib.load('SVR_model.joblib')
-
-def verificar_api_key():    
-    api_key = request.headers.get('X-API-KEY')
-    if api_key == API_KEY_ANA:
-        return True
-    else:
-        return False
     
 @app.route('/apidocs/')
 def apidocs():
@@ -76,9 +63,6 @@ def predict():
               items:
                 type: number
     """
-
-    if not verificar_api_key():
-        return jsonify({'error': 'Acesso negado'}), 403
     
     try:
         dados = request.get_json()
