@@ -34,7 +34,7 @@ if __name__ == '__main__':
 # Carrega o modelo usando um caminho absoluto
 model = joblib.load('SVR_model.joblib')
     
-@app.route('/apidocs/')
+@app.route('/apidocs')
 def apidocs():
     return jsonify(swagger(app))
 
