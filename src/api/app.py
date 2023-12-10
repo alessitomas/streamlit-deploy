@@ -5,7 +5,6 @@ import joblib
 from pymongo import MongoClient
 import pandas as pd
 from flask import Flask, request, jsonify
-from flasgger import Swagger , swag_from
 from scripts.data_preprocessing import preprocessing, mergeHeader_Columns
 from scripts.data_feature_engineering import feature_engineering
 
@@ -19,18 +18,11 @@ db_name = client["AnaHealth"]
 collection = db_name["Api-Log"]
 
 app = Flask(__name__)
-swagger = Swagger(app)
 
 # Carrega o modelo usando um caminho absoluto
 model = joblib.load('SVR_model.joblib')
-    
-@app.route('/apidocs')
-def apidocs():
-    return jsonify(swagger(app))
-
 
 @app.route('/predict', methods=['POST'])
-@swag_from('swagger/predict.yml')
 def predict():
     dados_crus = pd.read_csv('../../data/dados_recentes.csv')
     dados_crus = mergeHeader_Columns(dados_crus)
@@ -50,9 +42,6 @@ def predict():
     except Exception:
         return jsonify({"erro": "Erro no formato dos dados."}), 400
     
-
-    # dados_crus = dados_crus.append(data, ignore_index=True)
-    # dados_crus.columns = data.columns
     dados_crus_merge = pd.concat([dados_crus, data], ignore_index=True)
     cleaned_df = feature_engineering(preprocessing(dados_crus_merge))
     insert_data = {
