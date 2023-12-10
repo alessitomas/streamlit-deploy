@@ -24,7 +24,7 @@ model = joblib.load('SVR_model.joblib')
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    dados_crus = pd.read_csv('../../data/dados_recentes.csv')
+    dados_crus = pd.read_csv('dados_recentes.csv')
     dados_crus = mergeHeader_Columns(dados_crus)
     
     if request.headers.get('ana-api-key') != ana_api_key:
