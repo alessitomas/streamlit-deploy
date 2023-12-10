@@ -32,7 +32,7 @@ def mergeHeader_Columns(data):
 def preprocessing(data_dataframe):
     from sklearn.impute import SimpleImputer
 
-    data_dataframe = mergeHeader_Columns(data_dataframe)
+    # data_dataframe = mergeHeader_Columns(data_dataframe)
     # preprocessing 1
     data_dataframe = data_dataframe.drop(["PESSOA_PIPEDRIVE_id_person_recommendation","PESSOA_PIPEDRIVE_Recebe Comunicados?", "PESSOA_PIPEDRIVE_Interesses", "PESSOA_PIPEDRIVE_Pontos de Atenção", "FUNIL_ONBOARDING_PIPEDRIVE_id_label"], axis=1)
     data_dataframe['PESSOA_PIPEDRIVE_birthdate'] = pd.to_datetime(data_dataframe['PESSOA_PIPEDRIVE_birthdate'])
@@ -251,18 +251,6 @@ def preprocessing(data_dataframe):
     data_dataframe = data_dataframe.drop(data_dataframe[(data_dataframe['FUNIL_ASSINATURA_PIPEDRIVE_status'] == 'won') & (~data_dataframe['PESSOA_PIPEDRIVE_contract_end_date'].isnull())].index)
     data_dataframe = data_dataframe.drop(data_dataframe[(data_dataframe['FUNIL_ASSINATURA_PIPEDRIVE_status'] == 'lost') & (data_dataframe['PESSOA_PIPEDRIVE_contract_end_date'].isnull())].index)
     
-    #exportando df pronto
-    data_dataframe.to_csv('../notebooks/data/data-preprocessed.csv', index=False)
     
     return data_dataframe
 
-
-
-
-
-
-#ATENDIMENTOS_AGENDA_Faltas Psicoterapia', 'ATENDIMENTOS_AGENDA_Qde Prescrições
-
-
-
-preprocessing(pd.read_csv("../notebooks/data/dado_recente.csv"))

@@ -11,7 +11,7 @@ import os
 def modelo(data):
 
     try:
-        for indice, linha in data['status_won'].items():
+        for indice, linha in data['assinatura_status_lost'].items():
             if linha == 1:
                 data.drop(indice, inplace=True)
 
@@ -58,8 +58,3 @@ def modelo(data):
     except Exception as e:
         print(f"Ocorreu um erro: {e}")
 
-
-ffff = pd.read_csv("../notebooks/data/data-engineering.csv")
-print(ffff.shape)
-# Chame a função modelo
-modelo(ffff)

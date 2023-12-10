@@ -1,3 +1,4 @@
+from distutils.command.clean import clean
 import os
 import sys
 import joblib
@@ -5,26 +6,17 @@ from pymongo import MongoClient
 import pandas as pd
 from flask import Flask, request, jsonify
 from flasgger import Swagger , swag_from
-
-def processa_df(df):
-      
-    nome_arquivo_csv = "saida.csv"
-
-    # Salvar o DataFrame em um arquivo CSV
-    df.to_csv(nome_arquivo_csv, index=False)
-    
-
-    data_real_final = df.drop(columns=["PESSOA_PIPEDRIVE_id_person","stay_time"])
-
-    return data_real_final
+from scripts.data_preprocessing import preprocessing, mergeHeader_Columns
+from scripts.data_feature_engineering import feature_engineering
 
 mongo_password = os.environ.get('MONGO_PASSWORD')
+ana_api_key = os.environ.get('ANA_API_KEY')
 
-url = f"mongodb+srv://AnaHealth:{mongo_password}@anahealth.2qbmc6n.mongodb.net/?retryWrites=true&w=majority"
+url = f"mongodb+srv://API-SPRINT:{mongo_password}@anahealth.2qbmc6n.mongodb.net/?retryWrites=true&w=majority"
 
 client = MongoClient(url)
 db_name = client["AnaHealth"]
-collection = client["Api-Log"]
+collection = db_name["Api-Log"]
 
 app = Flask(__name__)
 swagger = Swagger(app)
@@ -40,74 +32,39 @@ def apidocs():
 @app.route('/predict', methods=['POST'])
 @swag_from('swagger/predict.yml')
 def predict():
-    """
-    Endpoint para previsão.
-    ---
-    parameters:
-      - name: data
-        in: body
-        required: true
-        type: string
-        description: JSON de entrada para previsão.
-    responses:
-      200:
-        description: Resposta bem-sucedida.
-        schema:
-          properties:
-            predicao:
-              type: array
-              items:
-                type: number
-    """
+    dados_crus = pd.read_csv('../../data/dados_recentes.csv')
+    dados_crus = mergeHeader_Columns(dados_crus)
     
+    if request.headers.get('ana-api-key') != ana_api_key:
+        return jsonify({'error': 'Chave de API inválida'}), 401
     try:
         dados = request.get_json()
-        # json_serializado = json.dumps(dados, indent=4)  # Use indent para formatar o JSON com recuo
-
-        # # Abre o arquivo em modo de escrita
-        # with open('requisicao.json', 'w') as arquivo:
-        #     arquivo.write(json_serializado)
         if dados is None:
             return jsonify({"erro": "Nenhum dado JSON fornecido."}), 400
     except Exception:
         return jsonify({"erro": f"Erro ao processar a requisição"}), 500
-
+    
     try:
         data = pd.DataFrame([dados])
       
     except Exception:
         return jsonify({"erro": "Erro no formato dos dados."}), 400
     
-    # dados_preprocessados = preprocessing(data)
-    # if dados_preprocessados == False:
-    #     return jsonify({'error': 'Erro no pré-processamento dos dados'}), 400
-    # print(dados_preprocessados.shape)
 
-    # dados_feature = feature_engineering(dados_preprocessados)
-
-    # print(dados_feature.shape)
-    # if dados_feature == False:
-    #     return jsonify({'error': 'Erro na feature engineering dos dados'}), 400
-    
-    
-    
-    # data = processa_df(data)
-    
-    try : 
-        
-        predicao = model.predict(data)
-        
-        # if predicao != None:
-        #     collection.insert({"features": dados ,"predict": predicao.tolist(), "date" : datetime.now().strftime('%d-%m-%Y')})
-        return jsonify({'predicao': predicao.tolist()})
-
+    # dados_crus = dados_crus.append(data, ignore_index=True)
+    # dados_crus.columns = data.columns
+    dados_crus_merge = pd.concat([dados_crus, data], ignore_index=True)
+    cleaned_df = feature_engineering(preprocessing(dados_crus_merge))
+    insert_data = {
+        "dados": dados, 
+        "predicao": model.predict(cleaned_df.tail(1).drop(columns=['stay_time'], axis=1)).tolist(), 
+        "real": cleaned_df.tail(1)['stay_time'].tolist()
+    }
+    try:
+        collection.insert_one(insert_data)
     except Exception:
-        return jsonify({'error': 'Erro na predição do modelo'}), 400
+        return jsonify({"erro": "Erro ao inserir os dados no banco de dados."}), 500
+    return jsonify({'predicao': model.predict(cleaned_df.tail(1).drop(columns=['stay_time'], axis=1)).tolist(), "real": cleaned_df.tail(1)['stay_time'].tolist()})
 
-
-
-# se der erro lembre de voltar aqui
-# if __name__ == '__main__':
-#     app.run(debug=True)
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

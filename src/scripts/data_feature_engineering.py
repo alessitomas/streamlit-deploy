@@ -172,7 +172,6 @@ def feature_engineering(data_pre):
     data_pre = data_pre[(data_pre['WHOQOL_Social_New'] >= Q1 - 1 * IQR) & (data_pre['WHOQOL_Social_New'] <= Q3 + 1 * IQR)]
 
     data_pre = pd.get_dummies(data_pre, columns=['last_stage_concluded'], prefix='stage')
-
-    data_pre.to_csv('../notebooks/data/data-engineering.csv', index=False)
+    data_pre.drop(columns=["PESSOA_PIPEDRIVE_id_person"], inplace=True, axis=1)
     return data_pre
 
