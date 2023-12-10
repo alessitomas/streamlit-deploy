@@ -38,27 +38,7 @@ def feature_engineering(data_pre):
     data_pre["PESSOA_PIPEDRIVE IDOSO"].fillna(0)
     data_pre["PESSOA_PIPEDRIVE IDOSO"].replace(True, 1, inplace=True)
     data_pre["PESSOA_PIPEDRIVE IDOSO"].replace(False, 0, inplace=True)
-    
 
-    data_pre["TWILIO_Ligações Outbound Qtd Significativa"] = data_pre["TWILIO_Ligações Outbound"] >= data_pre["TWILIO_Ligações Outbound"].mean()
-    data_pre["TWILIO_Ligações Outbound Qtd Significativa"].fillna(0)
-    data_pre["TWILIO_Ligações Outbound Qtd Significativa"].replace(True, 1, inplace=True)
-    data_pre["TWILIO_Ligações Outbound Qtd Significativa"].replace(False, 0, inplace=True)
-
-    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Nenhum"] = data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] == 0
-    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Nenhum"].fillna(0)
-    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Nenhum"].replace(True, 1, inplace=True)
-    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Nenhum"].replace(False, 0, inplace=True)
-
-    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"] = (data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] > 0) & (data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] <= data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].mean() )
-    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"].fillna(0)
-    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"].replace(True, 1, inplace=True)
-    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Pouco"].replace(False, 0, inplace=True)
-
-    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"] = data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"] > data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia"].mean() 
-    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"].fillna(0)
-    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"].replace(True, 1, inplace=True)
-    data_pre["ATENDIMENTOS_AGENDA_Qde Psicoterapia Muito"].replace(False, 0, inplace=True)
 
     data_pre["ATENDIMENTOS_AGENDA_Qde Prescrições"].fillna(0,inplace=True)
 
@@ -196,4 +176,3 @@ def feature_engineering(data_pre):
     data_pre.to_csv('../notebooks/data/data-engineering.csv', index=False)
     return data_pre
 
-feature_engineering(pd.read_csv("../notebooks/data/data-preprocessed.csv"))

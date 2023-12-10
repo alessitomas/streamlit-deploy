@@ -1,6 +1,5 @@
 import os
 import sys
-from flask import Flask, request, jsonify
 import joblib
 from pymongo import MongoClient
 import pandas as pd
@@ -20,6 +19,7 @@ def processa_df(df):
     return data_real_final
 
 mongo_password = os.environ.get('MONGO_PASSWORD')
+
 url = f"mongodb+srv://AnaHealth:{mongo_password}@anahealth.2qbmc6n.mongodb.net/?retryWrites=true&w=majority"
 
 client = MongoClient(url)
@@ -28,8 +28,6 @@ collection = client["Api-Log"]
 
 app = Flask(__name__)
 swagger = Swagger(app)
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
 
 # Carrega o modelo usando um caminho absoluto
 model = joblib.load('SVR_model.joblib')
@@ -37,6 +35,7 @@ model = joblib.load('SVR_model.joblib')
 @app.route('/apidocs')
 def apidocs():
     return jsonify(swagger(app))
+
 
 @app.route('/predict', methods=['POST'])
 @swag_from('swagger/predict.yml')
@@ -92,7 +91,7 @@ def predict():
     
     
     
-    data = processa_df(data)
+    # data = processa_df(data)
     
     try : 
         
@@ -105,5 +104,10 @@ def predict():
     except Exception:
         return jsonify({'error': 'Erro na predição do modelo'}), 400
 
+
+
+# se der erro lembre de voltar aqui
+# if __name__ == '__main__':
+#     app.run(debug=True)
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
