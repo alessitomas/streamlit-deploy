@@ -19,24 +19,27 @@ df = get_data_from_mongo(url, db_name, collection_name_dataset)
 st.title("Vizualizações sobre os dados")
 
 # Adicionar uma barra lateral
-option = st.sidebar.selectbox(
-    'Escolha um gráfico',
-    ('Todos','Idade das Pessoas que Encerraram Contrato', 'Estados em que os clientes vivem', 'Cidades em que os clientes vivem','Gênero dos clientes'))
+options = st.sidebar.multiselect(
+    'Escolha os gráficos para comparar',
+    ('Todos','Idade das Pessoas que Encerraram Contrato', 'Estados em que os clientes vivem', 'Cidades em que os clientes vivem','Gênero dos clientes'),
+    default=['Idade das Pessoas que Encerraram Contrato', 'Estados em que os clientes vivem', 'Cidades em que os clientes vivem','Gênero dos clientes'])
+    
+
 
 check_authentication()
 logged_out_option()
 
-# Exibir o gráfico selecionado
-if option == 'Todos':
-    plot_graphic_4(df)
-    plot_graphic_7(df)
-    plot_graphic_5(df)
-    plot_graphic_8(df)
-elif option == 'Idade das Pessoas que Encerraram Contrato':
-    plot_graphic_4(df)
-elif option == 'Estados em que os clientes vivem':
-    plot_graphic_7(df)
-elif option == 'Cidades em que os clientes vivem':
-    plot_graphic_5(df)
-elif option == 'Gênero dos clientes':
-    plot_graphic_8(df)
+for option in options:
+    if option == 'Todos':
+        plot_graphic_4(df)
+        plot_graphic_7(df)
+        plot_graphic_5(df)
+        plot_graphic_8(df)
+    elif option == 'Idade das Pessoas que Encerraram Contrato':
+        plot_graphic_4(df)
+    elif option == 'Estados em que os clientes vivem':
+        plot_graphic_7(df)
+    elif option == 'Cidades em que os clientes vivem':
+        plot_graphic_5(df)
+    elif option == 'Gênero dos clientes':
+        plot_graphic_8(df)

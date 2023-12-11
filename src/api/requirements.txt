@@ -3,3 +3,6 @@ pymongo
 pandas
 scikit-learn
 numpy
+flasgger 
+gunicorn
+category-encoders
