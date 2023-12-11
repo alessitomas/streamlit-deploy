@@ -83,19 +83,19 @@ Por ter sido treinado em um conjunto de dados com pouco tempo, e com pessoas que
 
 ## Documentação da API
 
-#### Retorna o tempo estimado, em dias, de permanência do usuario na plataforma.
+### Rota para usar o modelo preditivo
 
 ```http
   POST http://54.191.142.192:8082/predict
 ```
 
-| Parâmetro   | Tipo       | Descrição                           |
+| Header     | Tipo       | Descrição                           |
 | :---------- | :--------- | :---------------------------------- |
-| `X_API_KEY` | `string` | **Obrigatório**. A chave da sua API |
+| `ANA-API-KEY` | `string` | **Obrigatório**. A chave da sua API |
 
 
 
-#### Formato dos dados a serem enviados 
+#### Formato dos dados a serem enviados vai body da requisição (JSON)
 
 `{"PESSOA_PIPEDRIVE_id_person":"1260","PESSOA_PIPEDRIVE_birthdate":"1995-04-05","PESSOA_PIPEDRIVE_id_gender":"63","PESSOA_PIPEDRIVE_id_marrital_status":"80","PESSOA_PIPEDRIVE_state":"São Paulo","PESSOA_PIPEDRIVE_city":"São Carlos","PESSOA_PIPEDRIVE_postal_code":"13560-470","PESSOA_PIPEDRIVE_id_health_plan":"412","PESSOA_PIPEDRIVE_id_person_recommendation":null,"PESSOA_PIPEDRIVE_contract_start_date":"2021-08-12","PESSOA_PIPEDRIVE_contract_end_date":"2022-09-11","PESSOA_PIPEDRIVE_id_continuity_pf":"339","PESSOA_PIPEDRIVE_Canal de Preferência":null,"PESSOA_PIPEDRIVE_notes_count":"1","PESSOA_PIPEDRIVE_done_activities_count":"3","PESSOA_PIPEDRIVE_Recebe Comunicados?":null,"PESSOA_PIPEDRIVE_Interesses":null,"PESSOA_PIPEDRIVE_Pontos de Atenção":null,"FUNIL_ASSINATURA_PIPEDRIVE_id_stage":"65","FUNIL_ASSINATURA_PIPEDRIVE_id_org":"448","FUNIL_ASSINATURA_PIPEDRIVE_status":"lost","FUNIL_ASSINATURA_PIPEDRIVE_start_of_service":"2021-08-12","FUNIL_ASSINATURA_PIPEDRIVE_lost_time":"2022-09-11 03:00:00","FUNIL_ASSINATURA_PIPEDRIVE_lost_reason":"[Assinatura] Desligamento","FUNIL_ONBOARDING_PIPEDRIVE_add_time":"2021-09-09 13:44:13","FUNIL_ONBOARDING_PIPEDRIVE_status":"open","FUNIL_ONBOARDING_PIPEDRIVE_id_label":"325","FUNIL_ONBOARDING_PIPEDRIVE_stay_in_pipeline_stages_welcome":"0","FUNIL_ONBOARDING_PIPEDRIVE_stay_in_pipeline_stages_first_meeting":"0","FUNIL_ONBOARDING_PIPEDRIVE_stay_in_pipeline_stages_whoqol":"29770","FUNIL_ONBOARDING_PIPEDRIVE_won_time":null,"FUNIL_ONBOARDING_PIPEDRIVE_lost_time":null,"FUNIL_ONBOARDING_PIPEDRIVE_lost_reason":null,"FUNIL_ONBOARDING_PIPEDRIVE_activities_count":"0","ATENDIMENTOS_AGENDA_Qde Todos Atendimentos":"0","ATENDIMENTOS_AGENDA_Faltas Todos Atendimento":"0","ATENDIMENTOS_AGENDA_Qde Atendimento Médico":null,"ATENDIMENTOS_AGENDA_Faltas Atendimento Médico":null,"ATENDIMENTOS_AGENDA_Datas Atendimento Médico":null,"ATENDIMENTOS_AGENDA_Qde Atendimentos Acolhimento":null,"ATENDIMENTOS_AGENDA_Faltas Acolhimento":null,"ATENDIMENTOS_AGENDA_Datas Acolhimento":null,"ATENDIMENTOS_AGENDA_Qde Psicoterapia":null,"ATENDIMENTOS_AGENDA_Faltas Psicoterapia":null,"ATENDIMENTOS_AGENDA_Datas Psicoterapia":null,"ATENDIMENTOS_AGENDA_Qde Prescrições":"1","ATENDIMENTOS_AGENDA_Datas Prescrição":"07\\/12\\/2021","WHOQOL_Qde Respostas WHOQOL":"1","WHOQOL_Físico":"4,00","WHOQOL_Psicológico":"4","WHOQOL_Social":"4","WHOQOL_Ambiental":"5","COMUNICARE_Problemas Abertos":"diabetes de tipo 2 T90 (CIAP-2); ansiedade P01 (CIAP-2); obesidade com imc>=30 T82 (CIAP-2); carência de vitamina D T91 (CIAP-2); saliva anormal A91 (CIAP-2)","TWILIO_Mensagens Inbound":"74","TWILIO_Data Última Mensagens Inbound":"2022-06-22 06:20:09","TWILIO_Mensagens Outbound":"53","TWILIO_Data Última Mensagens Outbound":"2022-08-23 11:36:44","TWILIO_Ligações Inbound":null,"TWILIO_Data Última Ligações Inbound":null,"TWILIO_Ligações Outbound":null,"TWILIO_Data Última Ligações Outbound":null,"COBRANÇA_VINDI_Qde Total de Faturas":null,"COBRANÇA_VINDI_Qde Total de Tentativas de Cobrança":null,"COBRANÇA_VINDI_Método de Pagamento":null,"COBRANÇA_VINDI_Valor Médio da Mensalidade":null,"COBRANÇA_VINDI_Qde Total de Faturas Pagas após Vencimento":null,"COBRANÇA_VINDI_Qde Total de Faturas Inadimpletes":null,"COBRANÇA_VINDI_Valor Total Inadimplência":null,"COBRANÇA_VINDI_Qde Perfis de Pagamento Inativos":null}`
 
