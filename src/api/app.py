@@ -27,7 +27,8 @@ def predict():
     dados_crus = pd.read_csv('dados_recentes.csv')
     dados_crus = mergeHeader_Columns(dados_crus)
     
-    if request.headers.get('ana-api-key') != ana_api_key:
+    if request.headers.get('ANA-API-KEY') != ana_api_key or request.headers.get('ANA-API-KEY') is None:
+        print(request.headers.get('ANA-API-KEY'), request.headers.get('ANA-API-KEY')) 
         return jsonify({'error': 'Chave de API inválida'}), 401
     try:
         dados = request.get_json()

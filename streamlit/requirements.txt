@@ -5,3 +5,4 @@ plotly
 bcrypt
 python-dotenv
 kneed 
+seaborn
